@@ -76,3 +76,17 @@ for( idx in 1:nrow( coords))
 }
 
 sum( MM > 1)
+
+mmt <- tibble()
+
+mmt <- tibble(
+  rr =rep( 1:dd, each=dd),
+  cc=rep( 1:dd, times=dd),
+  value=as.vector(MM)
+)
+
+mmt$value <- factor( mmt$value)
+ggplot( mmt, aes( x=rr, y=cc, fill = value)) + 
+  geom_raster() +
+  scale_fill_brewer( "BuPu") +
+  theme_minimal()
