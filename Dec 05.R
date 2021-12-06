@@ -89,4 +89,5 @@ mmt$value <- factor( mmt$value)
 ggplot( mmt, aes( x=rr, y=cc, fill = value)) + 
   geom_raster() +
   scale_fill_brewer( "BuPu") +
+  ggtitle( "Advent of Code Day 5") +
   theme_minimal()
