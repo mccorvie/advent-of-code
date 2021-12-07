@@ -15,13 +15,11 @@ target <- round(mean( crab_pos))
 dist <- abs( crab_pos-target)
 sum(dist*(dist+1)/2)
 
-
 fuel_cost <- function( target )
 {
   dist <- abs(crab_pos-target)
   sum(dist*(dist+1)/2)
 }
 
-for( target in 475:495)
-  cat( target, fuel_cost( target ) - 94862000, "\n")
-
+min(sapply( 0:1876, fuel_cost))
+# but the actual min is 1 away because its not quite the L2 minimizer
