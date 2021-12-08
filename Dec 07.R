@@ -1,10 +1,8 @@
 library( tidyverse )
-library( bit64)
 dir <- "~/Desktop/Advent-Code-2021/Dec 07"
 ff <- "input"
 
-lines    <- readLines( file.path( dir, ff))
-crab_pos <- strtoi(str_split( lines, ",", simplify=T))
+crab_pos <- scan( file.path( dir, ff), sep=",")
 
 # L1 minimizer is the median
 mm <- median(crab_pos)
@@ -21,5 +19,16 @@ fuel_cost <- function( target )
   sum(dist*(dist+1)/2)
 }
 
-min(sapply( 0:1876, fuel_cost))
+crab_pos = c(rep(1,100),rep(100,20))
+
+x_pos <- min(crab_pos):max(crab_pos)
+fuel_costs <- sapply( x_pos, fuel_cost)
+min(fuel_costs)
+x_pos[which( fuel_costs==min(fuel_costs))]
+
 # but the actual min is 1 away because its not quite the L2 minimizer
+optimize( fuel_cost, c( min(crab_pos), max( crab_pos)))
+mean(crab_pos)
+median(crab_pos)
+
+

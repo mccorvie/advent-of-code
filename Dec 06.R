@@ -1,5 +1,4 @@
 library( tidyverse )
-library( bit64)
 dir <- "~/Desktop/Advent-Code-2021/Dec 06"
 ff <- "input"
 
