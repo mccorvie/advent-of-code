@@ -37,7 +37,6 @@ while( !converged )
 {
   cat( "\nlowest risk", min_path[1,1], "\n")
   converged <- TRUE
-
   
   for( rr in dim:1)
     for( cc in dim:1)
@@ -60,6 +59,10 @@ while( !converged )
     }
 }
 
+answer <- min_path[1,1]
+
+# The rest is just to print out a pretty path
+
 in_path <- matrix( F, nrow=dim, ncol=dim)
 rr<-cc<-1
 while( rr < dim || cc < dim)
@@ -76,10 +79,6 @@ while( rr < dim || cc < dim)
   else
     stop( paste("wtf", rr, cc))
 }
-
-
-in_path
-answer <- min_path[1,1]
 
 for( rr in 1:dim)
 {
