@@ -35,7 +35,6 @@ buffer <- buffer_sz <- 0L
 loc <- 1
 cum_bits_requested <- 0
 
-buff_sz_list <- NULL
 get_bits <- function( nn )
 {
   cum_bits_requested <<- cum_bits_requested + nn
@@ -51,8 +50,6 @@ get_bits <- function( nn )
   out    <- bitwShiftR( buffer, buffer_sz - nn)
   buffer <<- bitwXor( buffer,  bitwShiftL( out, buffer_sz - nn))
   buffer_sz <<- buffer_sz - nn
-  buff_sz_list <<- c( buff_sz_list, buffer_sz)
-  
   out
 }
 
@@ -75,16 +72,9 @@ packet_tree <- function()
         break
     }
     
-    out <- if( part1 ) VV else literal_value
-    cat( out, " " )
-    return( out)
+    return( if( part1 ) VV else literal_value )
   }
-  
-  if( part1)
-    cat( VV,"(" )
-  else
-    cat( TT, "(")
-  
+
   II <- get_bits(1)
   operator_args <- NULL
   if( II )
@@ -101,47 +91,15 @@ packet_tree <- function()
       operator_args <- c( operator_args, packet_tree())
   }
   
-   
-#  cat(  "=",paste0( operator_args, collapse=", "), ")")
-  cat( ")")
   if( part1 )
     return( VV + sum(operator_args))
 
-  funcs <- list( sum, prod, min, max, NULL, `>=`, `<=`, `==` )
+  funcs <- list( sum, prod, min, max, NULL, `>`, `<`, `==` )
   func <- funcs[[ TT+1 ]]
 
   return( as.numeric( do.call( func, as.list( operator_args ))))
 }
 
-total_vv <- 0
-
-# while( loc < str_length( chunk))
-# {
-#   
-#   total_vv <- total_vv +  packet_tree()
-# }
-
 part1<-F
 total <- packet_tree()
 sprintf( "%.100g",total)
-
-# loc
-# #packet_tree()
-# 
-# chunk <- "8A004A801A8002F478"
-# print_binary( get_bits(3),3)
-# print_binary( get_bits(3),3)
-# 
-# chunk <-"C200B40A82" 
-# 
-# buffer <- buffer_sz <- 0
-# loc <- 1
-# cum_bits_requested <- 0
-# 
-# get_bits( 5)
-
-
-# guess 63107991125
-# guess 258889206734
-# guess 85872105804846
-max(buff_sz_list)
