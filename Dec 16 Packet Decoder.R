@@ -61,14 +61,11 @@ packet_tree <- function()
   if( TT == 4 )
   {
     literal_value <- 0
-    literal_mask <- bitwShiftL( 1L, 4 )
-    
     while( T)
     {
       PP <- get_bits( 5)
-      more_groups   <- bitwAnd( PP, literal_mask)
-      literal_value <- literal_value * 16 + bitwXor( PP, more_groups)
-      if( !more_groups )
+      literal_value <- literal_value * 16 + bitwAnd( PP,  15)
+      if( ! bitwAnd( PP, 16) )
         break
     }
     
