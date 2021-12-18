@@ -76,13 +76,15 @@ sf_accumulate <- function( sf_expr )
 
 cnt <- 0
 mm <- 0
-for( line1 in lines)
-  for( line2 in lines)
+sf_expr_list <- map( lines, sf_parse)
+
+for( sf_expr1 in sf_expr_list)
+  for( sf_expr2 in sf_expr_list )
   {
     cnt <- cnt+1
     if( !( cnt%%10))
       cat( cnt, "/ 10000\n")
-    sf_addition( sf_parse( line1), sf_parse(line2))
+    sf_addition( sf_expr1, sf_expr2)
     mm <- max( mm, sf_accumulate(sf_math))
   }
 mm
