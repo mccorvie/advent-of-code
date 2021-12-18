@@ -1,4 +1,3 @@
-library( lubridate)
 target_x = c( 244,303 )
 target_y = c(-91, -54)
 
@@ -10,13 +9,13 @@ tt <- 1:tt_max
 
 count <- 0
 maxy  <- 0
-for( vx0 in 1:303)
-  for( vy0 in -91:500)
+for( vx0 in 1:max(target_x))
+  for( vy0 in min(target_y):500)
   {
     xx <- ( 2*vx0 - tt+1 )*tt/2
     if( vx0 < tt_max)
       xx[(vx0+1):tt_max ] <- xx[vx0]
-
+    
     yy <- ( 2*vy0 - tt+1 )*tt/2
     
     if( any(target_x[1]<= xx & xx <= target_x[2] & target_y[1]<= yy & yy <= target_y[2]))
