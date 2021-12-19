@@ -53,11 +53,7 @@ sf_split <- function()
 sf_addition <- function( aa, bb)
 {
   sf_math <<- c( "[", aa, bb, "]" )
-  while( sf_explode() || sf_split())
-  {
-    #cat( length( sf_math), "\n")
-  }
-  #cat( "===> ", paste0( sf_math, collapse ="."), "\n") 
+  while( sf_explode() || sf_split()){}
   sf_math
 }
 
@@ -72,10 +68,11 @@ sf_accumulate <- function( sf_expr )
 
 # reduce( map( lines, sf_parse),sf_addition)
 # paste0( sf_math, collapse =".")
-# sf_accumulate( sf_math)
+# answer1 <- sf_accumulate( sf_math)
+# answer1
 
 cnt <- 0
-mm <- 0
+answer2 <- 0
 sf_expr_list <- map( lines, sf_parse)
 
 for( sf_expr1 in sf_expr_list)
@@ -85,9 +82,10 @@ for( sf_expr1 in sf_expr_list)
     if( !( cnt%%10))
       cat( cnt, "/ 10000\n")
     sf_addition( sf_expr1, sf_expr2)
-    mm <- max( mm, sf_accumulate(sf_math))
+    answer2 <- max( answer2, sf_accumulate(sf_math))
   }
-mm
+
+answer2
 
 
 
