@@ -1,5 +1,5 @@
 dir <- "~/Desktop/Advent-Code-2021/Dec 19"
-#ff  <- "input_test"
+ff  <- "input_test"
 ff  <- "input"
 lines <- readLines( file.path( dir, ff))
 
@@ -20,18 +20,15 @@ distance_matrix <- function( scanner )
   if( is.matrix( dd_memo[[scanner]]))
     return( dd_memo[[scanner]])
   scan_chart <- filter( charts, scanner==!!scanner)
-  dd <- matrix( NA, nrow = nrow(scan_chart), ncol=nrow(scan_chart))
-  rownames( dd ) <- scan_chart$beacon
-  colnames( dd ) <- scan_chart$beacon
-  for( b1 in scan_chart$beacon)
-    for( b2 in scan_chart$beacon )
-    {
-      b1_chart <- filter( scan_chart, beacon ==b1)
-      b2_chart <- filter( scan_chart, beacon ==b2)
-      dd[ b1, b2] <-( b1_chart$x -  b2_chart$x )^2 + ( b1_chart$y -  b2_chart$y )^2 +( b1_chart$z -  b2_chart$z )^2
-    }
+  dd <-expand_grid( pt1 = scan_chart, pt2 = scan_chart) %>%
+    mutate( beacon1=pt1$beacon, beacon2 = pt2$beacon, dist = (pt1$x-pt2$x)^2+(pt1$y-pt2$y)^2+(pt1$z-pt2$z)^2) %>%
+    select( beacon1, beacon2, dist)%>%
+    pivot_wider( names_from=beacon2, values_from = dist) %>%
+    arrange( beacon1) %>%
+    select( -beacon1) %>%
+    as.matrix()
   
-  cat( "saving distance matrix", scanner,"\n")
+  rownames(dd)<- colnames(dd)
   dd_memo[[scanner]] <<- dd
   dd
 }
