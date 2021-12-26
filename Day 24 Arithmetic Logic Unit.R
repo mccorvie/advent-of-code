@@ -28,40 +28,41 @@ alu <- function( input, instructions, z )
   return( list( w=w, x=x, y=y, z=z))  
 }
 
+# Try to recursively solve for inputs through each instruction group
+# Unfortunately the search range is too small and it doesn't work
+
+memo <- list()
+solve_alu <- function( group_idx, target )
+{
+  if( group_idx ==0 )
+    return( list())
+  cat( paste0(group_idx, "/", target ), " ")
+  
+  if( !is.null( memo[[paste0(group_idx, "/", target)]]))
+    return( memo[[paste0(group_idx, "/", target)]])
+  
+  if( group_idx == 1 )
+    zlist <- 0
+  else
+    zlist <- 0:(26*target)
+  
+  out = list()
+  for( z in zlist)
+    for( in_digit in 1:9)
+        if( target == alu( in_digit, instructions[inst_groups[[group_idx]],], z)$z )
+          out <- c( out, lapply( solve_alu( group_idx-1, z), \(x) c(x, in_digit)))
+
+  memo[[paste0(group_idx, "/", target)]] <<- out
+  out
+}
+
+# inst_groups <-split( 1:nrow( instructions ), cumsum(instructions[,1] == "inp"))
+# solve_alu( 14,0)
 
 
-# biggest
-# w1=1
-# w2=2
-# w3=9
-# w4=9
-# w5=6
-# w6=9
-# w7=9
-# w8=7
-# w9=8
-# w10=2
-# w11=9
-# w12-3
-# w13=9
-# w14=9
-#
-# smallest
-# w1=1
-# w2=1
-# w3=8
-# w4=4
-# w5=1
-# w6=2
-# w7=3
-# w8=1
-# w9=1
-# w10=1
-# w11=7
-# w12=1
-# w13=8
-# w14=9
-big   <- c( 1,2,9,9,6,9,9,7,8,2,9,3,9,9)
+big   <- c( 1,2,9,9,6,9,9,7,8,2,9,3,9,9) 
 alu(big, instructions, 0)
+
 small <- c( 1,1,8,4,1,2,3,1,1,1,7,1,8,9)
 alu(small, instructions, 0)
+

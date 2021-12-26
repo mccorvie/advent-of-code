@@ -23,7 +23,7 @@ for( idx in 1:14 )
 # 
 # zz<-0
 # 
-# tt<- zz[1] !=w-b
+# tt<- peek(zz) !=w-b
 # if( a == 26)
 #   pop(zz)
 # if(tt)
