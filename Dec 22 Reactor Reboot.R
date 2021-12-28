@@ -3,7 +3,7 @@ library( lubridate)
 
 dir <- "~/Desktop/Advent-Code-2021/Dec 22"
 ff  <- "input"
-#ff<-"test2"
+# ff<-"test2"
 part1 <- F
 
 input_raw <- readLines( file.path( dir, ff))
@@ -16,22 +16,22 @@ if( part1 )
   coords <- coords[apply( abs(coords)<=50, 1, all),]
 
 ## part 1 easy algorithm
-# coords <- coords + 50
-# lights <- array( F, dim=c(100,100,100))
+# coords <- coords + 51
+# lights <- array( F, dim=c(101,101,101))
 # for( rr in 1:nrow( coords))
 #    lights[coords[rr,1]:coords[rr,2],coords[rr,3]:coords[rr,4],coords[rr,5]:coords[rr,6]] <- toggle[rr]=="on"
 # sum( lights)
 
 colnames( coords) <- c( "xmin", "xmax", "ymin","ymax","zmin","zmax")
-coord_t <-as_tibble( coords) %>%
+fundamental_boxes <-as_tibble( coords) %>%
   mutate( level = 0, volume = (xmax-xmin+1)*(ymax-ymin+1)*(zmax-zmin+1))
-coord_t
+fundamental_boxes
 
-coord_universal <- coord_t[1,]
-for( rr in 2:nrow( coord_t))
+all_boxes <- fundamental_boxes[1,]
+for( rr in 2:nrow( fundamental_boxes))
 {
-  this_box <- coord_t[rr,]
-  coord_universal <- coord_universal %>%
+  this_box <- fundamental_boxes[rr,]
+  all_boxes <- all_boxes %>%
     mutate( 
       xmin0 = this_box$xmin, xmax0 = this_box$xmax, 
       ymin0 = this_box$ymin, ymax0 = this_box$ymax, 
@@ -42,19 +42,22 @@ for( rr in 2:nrow( coord_t))
       level = level+1,
       volume = (xmax-xmin+1)*(ymax-ymin+1)*(zmax-zmin+1)
     ) %>%
-    filter( xmin < xmax, ymin < ymax, zmin < zmax ) %>%
-    select( xmin, xmax, ymin, ymax, zmin, zmax, level, volume ) %>%
-    bind_rows( coord_universal)
+    filter( xmin <= xmax, ymin <= ymax, zmin <= zmax ) %>%
+    select( -xmin0, -xmax0, -ymin0, -ymax0, -zmin0, -zmax0 ) %>%
+    bind_rows( all_boxes)
 
   if( toggle[rr] == "on")
-    coord_universal <- bind_rows( coord_universal, this_box )
+    all_boxes <- bind_rows( all_boxes, this_box )
 
-  #cat( rr, nrow( coord_universal ), "\n")
+  #cat( rr, nrow( all_boxes ), "\n")
 }
 
-answer <- coord_universal %>%
+answer <- all_boxes %>%
   summarize( total_on = sum( volume * (-1)^level))
 
 sprintf( "%.100g", answer$total_on)
+
+# all_boxes %>% count( level )
+# all_boxes %>% group_by( level) %>% summarize( total_on = sum( volume * (-1)^level))
 
 
