@@ -25,7 +25,6 @@ if( part1 )
 colnames( coords) <- c( "xmin", "xmax", "ymin","ymax","zmin","zmax")
 fundamental_boxes <-as_tibble( coords) %>%
   mutate( level = 0, volume = (xmax-xmin+1)*(ymax-ymin+1)*(zmax-zmin+1))
-fundamental_boxes
 
 all_boxes <- fundamental_boxes[1,]
 for( rr in 2:nrow( fundamental_boxes))
