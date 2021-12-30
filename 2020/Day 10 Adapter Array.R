@@ -14,8 +14,8 @@ num_chains[ max(joltages)] <- 1
 
 for( cur_joltage in sort(joltages, decreasing=T)[2:(length( joltages)-1)] )
   num_chains[ cur_joltage ]= sum( num_chains[ intersect( joltages, cur_joltage + 1:3) ])
-sum( num_chains[ intersect( joltages, 1:3) ])
-
+answer2<-sum( num_chains[ intersect( joltages, 1:3) ])
+sprintf( "%.100g", answer2)
 
 # num_adapter_strings <- function( cur_joltage )
 # {
