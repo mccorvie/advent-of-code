@@ -48,7 +48,7 @@ eval_expr <- function( ex )
   get_term()
 }
 
-#sprintf( "%.100g", sum( map_dbl( math_expressions, eval_expr )))
+sprintf( "%.100g", sum( map_dbl( math_expressions, eval_expr )))
 
 # expr <- "1 + 2 * 3 + 4 * 5 + 6"
 # expr <- "1 + (2 * 3) + (4 * (5 + 6))"
@@ -63,13 +63,12 @@ eval_expr <- function( ex )
 answer2<-0
 for( expr in math_expressions)
 {
-  cat( expr, " ")
   expr <- str_replace_all( expr, "\\+","\\#")
   expr <- str_replace_all( expr, "\\*","\\+")
   expr <- str_replace_all( expr, "\\#","\\*")
   answer2 <- sum( answer2, eval( str2lang( expr)))
-  cat( eval( str2lang( expr)), answer2, "\n" )
 }
-answer2
+rm( `+`)
+rm( `*`)
 sprintf( "%.100g", answer2)
 
