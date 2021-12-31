@@ -54,5 +54,5 @@ for( tt in 1:6)
   
 }
 
-answer2 <- summarize( ccubes, total_on = sum( active))
+answer2 <- summarize( ccubes4, total_on = sum( active))
 answer2
