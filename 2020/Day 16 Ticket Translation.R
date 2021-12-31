@@ -1,6 +1,6 @@
 library( tidyverse)
 dir <- "~/Desktop/Advent-Code-2021/2020_inputs"
-ff  <- "day16-test"
+ff  <- "day16"
 ticket_info <- readLines( file.path( dir, ff))
 
 ticket_info <- split( ticket_info, cumsum(ticket_info==""))
@@ -22,23 +22,30 @@ nearby_tickets <- matrix(strtoi(str_split( nearby_tickets, ",", simplify = T)), 
 error  <- keep( nearby_tickets, ~ !(. %in% all_vals))
 answer1<-sum(error)
 answer1
+nearby_tickets
 
-valid_tickets <- matrix(map_lgl( nearby_tickets, ~ . %in% all_vals), ncol=dd)
+valid_tickets  <- matrix(map_lgl( nearby_tickets, ~ . %in% all_vals), ncol=dd)
 nearby_tickets <- nearby_tickets[apply(valid_tickets, 1, all),]
 
-row_valid <- matrix( NA, ncol = dd, nrow=dd)
+col_consistent <- matrix( NA, ncol = dd, nrow=dd)
 for( rr in 1:dd)
   for( cc in 1:dd)
-    row_valid[rr,cc] = all( nearby_tickets[,cc] %in% valid[[names(valid)[rr]]])
+    col_consistent[rr,cc] = all( nearby_tickets[,cc] %in% valid[[names(valid)[rr]]])
 
-possible <- apply(row_valid,2, which)
-
+possible <- apply(col_consistent,2, which)
 while(length(unlist(possible))>dd)
 {
   identified <- unlist(keep( possible, ~ length(.)==1))
-  possible <- map( possible, ~ if( length(.)==1) . else setdiff(., identified))
+  possible <- map( possible, \(x) if( length(x)==1) x else setdiff(x, identified))
   cat( length(identified), length(unlist(possible)),"\n")
 }
-possible
+
+
+departure_fields <- which(str_detect( names( valid), "^departure"))
+departure_cols <- which(map_lgl( unlist(possible), ~ . %in% departure_fields))
+
 my_ticket <- strtoi(str_split(ticket_info[2][[1]][3], ",")[[1]])
-my_ticket[unlist(possible[1:3])]
+#my_ticket[unlist(possible[1:3])]
+sprintf( "%.100g",prod(my_ticket[departure_cols]))
+
+
