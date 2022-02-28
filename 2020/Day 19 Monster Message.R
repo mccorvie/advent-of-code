@@ -42,8 +42,8 @@ while( nrow( rules) > 0)
   rules_resolved <- joined %>%
     mutate( resolved = paste0( left_resolved, right_resolved)) %>%
     select( rule_num, resolved ) %>%
-    bind_rows( rules_resolved ) %>%
-    distinct()
+    bind_rows( rules_resolved )
+  
   
   rules <- anti_join( rules, joined, by = c( "rule_num", "left_rule", "right_rule"))
   cat( nrow(rules ), nrow( rules_resolved ),"\n")  
@@ -51,11 +51,17 @@ while( nrow( rules) > 0)
 
 filter( rules_resolved, rule_num == "0")
 messages <- tibble( rule_num = "0", resolved = lines[134:length( lines)])
-nrow( inner_join( messages, rules_resolved))
+nn <- inner_join( messages, rules_resolved)
+nrow( nn )
 
-count( filter( rules_resolved, rule_num == "0"), aa = str_length(resolved))
-count( messages, aa = str_length(resolved))
+rules_resolved %>% nrow
+rules_resolved %>% distinct() %>% nrow  
 
-11 + 117 * 2 + 3
 
-paste0( "|",rules$right_rule,"|")
+# count( filter( rules_resolved, rule_num == "0"), aa = str_length(resolved))
+# count( messages, aa = str_length(resolved))
+# 
+# 11 + 117 * 2 + 3
+# 
+# paste0( "|",rules$right_rule,"|")
+# lines
