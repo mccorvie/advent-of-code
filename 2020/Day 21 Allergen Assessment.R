@@ -45,6 +45,9 @@ while( length( allergen_list ) > 0 )
   foreign_list[ names( translate )] <- NULL
 }
 
+#answer 1
 foreign %>% filter( !( ff %in% names( translate ) )) %>% nrow()
 
+#answer 2
+paste(names(sort( unlist(translate ))), collapse=",")
                     
