@@ -82,7 +82,7 @@ map_chr( 1:10, f)
 map_dbl( 1:10, ~ .%%3 ==2 )
 
 #
-# I like purr better than vapply(), sapply() 
+# I like purr better than lapply(), vapply(), sapply() 
 #
 
 ##
@@ -104,13 +104,13 @@ solb <- sum( sort( cal, decreasing=T)[1:3])
 
 # Due to David Robinson (@drob)
 
-cal <- tibble( cals = ss) |>
-  mutate( gg = cumsum( is.na(cals))) |>
-  count( gg, wt=cals)
+cal_tt <- tibble( cal = ss) |>
+  mutate( gg = cumsum( is.na(cal))) |>
+  count( gg, wt=cal)
 
-summarize( cal,  max( n))
+summarize( cal_tt,  max( n))
 
-cal |> 
+cal_tt |> 
   arrange( desc( n)) |>
   head(3) |>
   summarize( sum(n))
