@@ -28,7 +28,7 @@ for( cal in ss )
   cur_elf = cur_elf + cal
 }
 
-max_elf
+max_elf = max( cur_elf, max_elf )
 
 
 ##
@@ -79,7 +79,7 @@ map( 1:10, f )
 map_chr( 1:10, f)
 
 # get a double vector.  Note map is nice with anonymous functions
-map_dbl( 1:10, ~ .%%3 ==2 )
+map_dbl( 1:10, ~ .%%3 + .%%5  )
 
 #
 # I like purr better than lapply(), vapply(), sapply() 
@@ -97,23 +97,6 @@ cal <- split( ss, gg) |> map_dbl(~ sum(., na.rm=T))
 
 sola <- max( cal )
 solb <- sum( sort( cal, decreasing=T)[1:3])
-
-##
-## Tidyverse and data tables instead of lists and vectors ----
-##
-
-# Due to David Robinson (@drob)
-
-cal_tt <- tibble( cal = ss) |>
-  mutate( gg = cumsum( is.na(cal))) |>
-  count( gg, wt=cal)
-
-summarize( cal_tt,  max( n))
-
-cal_tt |> 
-  arrange( desc( n)) |>
-  head(3) |>
-  summarize( sum(n))
 
 
 ##
@@ -144,4 +127,23 @@ ll <- read_file( file.path( dir, ff))
 str_split( ll, "\n\n")[[1]] |>
   str_split( "\n" ) |> 
   map( as.numeric )
+
+
+
+##
+## Tidyverse and data tables instead of lists and vectors ----
+##
+
+# Due to David Robinson (@drob)
+
+cal_tt <- tibble( cal = ss) |>
+  mutate( gg = cumsum( is.na(cal))) |>
+  count( gg, wt=cal)
+
+summarize( cal_tt,  max( n))
+
+cal_tt |> 
+  arrange( desc( n)) |>
+  head(3) |>
+  summarize( sum(n))
 

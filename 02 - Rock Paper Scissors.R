@@ -120,7 +120,6 @@ rps1 <- rps0 %>%
 sol1 <- summarize( rps1, sum( score))
 sol1
 
-
 rps2 <- rps0 %>%
   left_join( win_chart ) %>%
   mutate(
