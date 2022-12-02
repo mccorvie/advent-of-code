@@ -91,9 +91,6 @@ sol2 <- summarize( rps2, sum( score))
 ##  Cleaned up and abstracted ------
 ##
 
-rps0 <- read_delim( file.path( dir, ff), col_names = c( "elf", "strategy"))
-rps0
-
 win_chart <- tribble(
   ~elf,  ~lose, ~draw,  ~win, 
   "A",   "C",   "A",   "B",   
@@ -101,64 +98,34 @@ win_chart <- tribble(
   "C",   "B",   "C",   "A"
 )
 
-rps1 <- rps0 %>%
-  left_join( win_chart ) %>%
+read_delim( file.path( dir, ff), col_names = c( "elf", "strategy")) |>
+  left_join( win_chart ) |>
   mutate(
-    me = case_when(
+    part1_me = case_when(
       strategy == "X" ~ "A",
       strategy == "Y" ~ "B",
       strategy == "Z" ~ "C"
     ),
-    shape_score = case_when(
-      me == "A" ~ 1,
-      me == "B" ~ 2,
-      me == "C" ~ 3
-    ),
-    outcome_score = case_when(
-      me == win ~ 6,
-      me == draw ~ 3,
-      me == lose ~ 0
-    ),
-    score = outcome_score + shape_score
-  )
-
-sol1 <- summarize( rps1, sum( score))
-sol1
-
-
-rps0 <- read_delim( file.path( dir, ff), col_names = c( "elf", "strategy"))
-rps0
-
-win_chart <- tribble(
-  ~elf,  ~lose, ~draw,  ~win, 
-  "A",   "C",   "A",   "B",   
-  "B",   "A",   "B",   "C",   
-  "C",   "B",   "C",   "A"
-)
-
-rps2 <- rps0 %>%
-  left_join( win_chart ) %>%
-  mutate(
-    me = case_when(
+    part2_me = case_when(
       strategy == "X" ~ lose,
       strategy == "Y" ~ draw,
       strategy == "Z" ~ win
     ),
+    me = part1_me, # change for part 1 vs part 2
     shape_score = case_when(
       me == "A" ~ 1,
       me == "B" ~ 2,
       me == "C" ~ 3
     ),
     outcome_score = case_when(
-      strategy == "X" ~ 0,
-      strategy == "Y" ~ 3,
-      strategy == "Z" ~ 6
+      me == win  ~ 6,
+      me == draw ~ 3,
+      me == lose ~ 0
     ),
     score = outcome_score + shape_score
-  )
+  ) |>
+  summarize( sum( score))
 
-sol2 <- summarize( rps2, sum( score))
-sol2
 
 
 ##
@@ -205,7 +172,7 @@ input <- read.delim( file.path( dir, ff), header=F, sep=" ") |>
 part1 <- sum( with( input, V2 + ((1+V2-V1)%%3)*3 ))
 
 # part2
-part2 <- sum(  with(input, ((V1+V2)%%3)+1 +3*(V2-1)))
+part2 <- sum(  with( input, ((V1+V2)%%3)+1 +3*(V2-1)))
 
 # "Much too hard for a 2nd day!"
 
