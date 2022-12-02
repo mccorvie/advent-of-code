@@ -8,7 +8,7 @@ ff  <- "input01"
 
 ss <- readLines( file.path( dir, ff)) |> strtoi()
 ss <- scan( file.path( dir, ff), blank.lines.skip = F)
-
+ss
 
 ##
 ## explicit loop ----
@@ -29,7 +29,7 @@ for( cal in ss )
 }
 
 max_elf = max( cur_elf, max_elf )
-
+max_elf
 
 ##
 ## Interlude 1: Pipes -----
@@ -91,8 +91,8 @@ map_dbl( 1:10, ~ .%%3 + .%%5  )
 
 #input_raw <- read_csv( file.path( dir, ff) ) 
 ss <- readLines( file.path( dir, ff)) |> strtoi()
-
 gg  <- is.na( ss) |> cumsum()
+
 cal <- split( ss, gg) |> map_dbl(~ sum(., na.rm=T)) 
 
 sola <- max( cal )
@@ -124,6 +124,7 @@ cal <- map_dbl( cal_list, ~ sum( ., na.rm=T))
 # due to Kara Woo (@kara_woo)
 
 ll <- read_file( file.path( dir, ff))
+
 str_split( ll, "\n\n")[[1]] |>
   str_split( "\n" ) |> 
   map( as.numeric )
@@ -136,9 +137,11 @@ str_split( ll, "\n\n")[[1]] |>
 
 # Due to David Robinson (@drob)
 
+ss
 cal_tt <- tibble( cal = ss) |>
   mutate( gg = cumsum( is.na(cal))) |>
   count( gg, wt=cal)
+
 
 summarize( cal_tt,  max( n))
 

@@ -2,6 +2,10 @@ library( tidyverse )
 dir <- "~/Desktop/aoc-input"
 ff  <- "input02"
 
+##
+##  Actual code used ------
+##
+
 # input_raw <- read_delim( file.path( dir, ff) ) 
 rps0 <- readLines( file.path( dir, ff)) %>%
   str_split( " ", simplify = T) 
@@ -34,7 +38,7 @@ rps1 <-  tibble( elf = rps0[,1], me0 = rps0[,2]) %>%
   )
 
 sol1 <- summarize( rps1, sum( score))
-
+sol1
 
 win = tribble(
   ~elf, ~win,
@@ -84,10 +88,11 @@ rps2 <-  tibble( elf = rps0[,1], outcome0 = rps0[,2]) %>%
 sol2 <- summarize( rps2, sum( score))
 
 ##
-##  Slicker approach
+##  Cleaned up and abstracted ------
 ##
 
 rps0 <- read_delim( file.path( dir, ff), col_names = c( "elf", "strategy"))
+rps0
 
 win_chart <- tribble(
   ~elf,  ~lose, ~draw,  ~win, 
@@ -120,6 +125,17 @@ rps1 <- rps0 %>%
 sol1 <- summarize( rps1, sum( score))
 sol1
 
+
+rps0 <- read_delim( file.path( dir, ff), col_names = c( "elf", "strategy"))
+rps0
+
+win_chart <- tribble(
+  ~elf,  ~lose, ~draw,  ~win, 
+  "A",   "C",   "A",   "B",   
+  "B",   "A",   "B",   "C",   
+  "C",   "B",   "C",   "A"
+)
+
 rps2 <- rps0 %>%
   left_join( win_chart ) %>%
   mutate(
@@ -143,4 +159,55 @@ rps2 <- rps0 %>%
 
 sol2 <- summarize( rps2, sum( score))
 sol2
+
+
+##
+## Using a matrix where the moves are row/col names ------
+## Emil Hvitfeld
+##
+
+input <- readLines( file.path( dir, ff))
+
+
+dict <- c(A = "rock", B = "paper", C = "scissors",
+          X = "lose", Y = "tie", Z = "win")
+
+you <- dict[substr(input, 1, 1)]
+me <- dict[substr(input, 3, 3)]
+
+
+mat <- matrix(
+  c("scissors", "rock", "paper",
+    "paper", "scissors", "rock",
+    "rock", "paper", "scissors"),
+  byrow = TRUE, ncol = 3,
+  dimnames = list(c("lose", "win", "tie"),
+                  c("rock", "paper", "scissors"))
+)
+mat
+
+scores <- c(win = 6, tie = 3, lose = 0, rock = 1, paper = 2, scissors = 3)
+
+sum(scores[mat[cbind(me, you)]]) + sum(scores[me])
+
+
+
+##
+## Computing the RPS outcome with modular arithmetic -----
+## Antione Fabri
+##
+
+
+input <- read.delim( file.path( dir, ff), header=F, sep=" ") |>
+  transform( V1 = match( V1, LETTERS), V2 = match( V2,LETTERS)-23)
+
+# part1 
+part1 <- sum( with( input, V2 + ((1+V2-V1)%%3)*3 ))
+
+# part2
+part2 <- sum(  with(input, ((V1+V2)%%3)+1 +3*(V2-1)))
+
+# "Much too hard for a 2nd day!"
+
+
 
