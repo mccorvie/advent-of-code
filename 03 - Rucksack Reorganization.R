@@ -6,9 +6,7 @@ ff  <- "input03"
 input <- readLines( file.path( dir, ff))
 # input_raw <- scan(  file.path( dir, ff))
 
-
 lengths=  str_length(input)
-
 
 ruck1 = str_sub( input, 1, lengths/2) |> str_split("")
 ruck2 = str_sub( input,lengths/2+1, lengths) |> str_split("")
@@ -19,11 +17,9 @@ upper <- c( rep( "", 26),LETTERS)
 aa <- map2( ruck1, ruck2, intersect) |> map( ~ which(. == low)) |> map_dbl(~ ifelse( length(.)>0,.,0))
 bb <- map2( ruck1, ruck2, intersect) |> map( ~ which(. == upper)) |> map_dbl(~ ifelse( length(.)>0,.,0))
 
+part1 <- sum(aa+bb)
+
 gg <- split( input,rep( 1:(length(input)%/%3), each=3))
-
-gg
-length( input)
-
 badge <- NULL
 for( idx in 1:length(gg))
 {
@@ -35,4 +31,4 @@ for( idx in 1:length(gg))
 aa <- badge |> map( ~ which(. == low)) |> map_dbl(~ ifelse( length(.)>0,.,0))
 bb <- badge |> map( ~ which(. == upper)) |> map_dbl(~ ifelse( length(.)>0,.,0))
 
-sum(aa+bb)
+part2 <- sum(aa+bb)
