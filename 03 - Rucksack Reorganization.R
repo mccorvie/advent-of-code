@@ -40,3 +40,38 @@ idx <- rep(1:(length(input)/3), each = 3)
 list <- split(input, idx)
 tripple_letters <- sapply(list, \(x) Reduce(intersect, x))
 sum(match(tripple_letters, c(letters, LETTERS)))
+
+
+
+
+##
+## data.table  --------
+##
+
+RucksackItems[, .(id = .I,
+                  sack1 = substr(items, 1, nchar(items)/2) ,
+                  sack2 = substr(items, nchar(items)/2 +1, nchar(items)) )
+][, .(sack1 = strsplit(sack1,""),
+      sack2 = strsplit(sack2,"")),
+  by = "id"
+][, merge(copy(.SD)[, .(sack1 = sack1[[1]]), "id"],
+          copy(.SD)[, .(sack2 = sack2[[1]]), "id"],
+          by = "id", allow.cartesian=TRUE)
+][sack1 == sack2,
+  unique(.SD)
+][, priority := which(sack1 == c(letters,LETTERS)),
+  by = "id"
+][, sum(priority)]
+
+
+RucksackItems[, .(id = .I,
+                  group = cumsum(.I %% 3 == 1),
+                  items = strsplit(items,"") )
+][, .(items = items[[1]]),
+  by = c("group","id")
+][, .(n_id = uniqueN(id)),
+  by = c("items","group")
+][n_id == 3
+][, priority := which(items == c(letters,LETTERS)),
+  by = "group"
+][, sum(priority)]
