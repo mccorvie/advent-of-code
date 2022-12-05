@@ -6,7 +6,7 @@ if( file.exists("cookie.R"))
 library( tidyverse )
 library( adventr)
 
-raw <- read_advent(day = xx, year=2022) 
+raw <- read_advent(day = xx, year=2022) |> head(-1)
 
 #dir <- "~/Desktop/aoc-input"
 #ff  <- "input01"

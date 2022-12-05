@@ -20,14 +20,12 @@ colnames( moves ) <- c( "crates", "from", "to")
 moves  <- tibble( raw = raw[11:length( raw)]) |>
   extract( raw, c("ncrates", "from", "to"), "move (\\d+) from (\\d+) to (\\d+)", convert = T )
 
-
 aoc_part <- 1
-
 for( row in 1:nrow( moves ))
 {
   move <- moves[row,]
   
-  crate_list <- tail( stacks[[move$from]], move$ncrates )
+  crate_list            <- tail( stacks[[move$from]], move$ncrates )
   stacks[[ move$from ]] <- head( stacks[[move$from]], -move$ncrates)
   
   if( aoc_part ==1 )
@@ -36,4 +34,4 @@ for( row in 1:nrow( moves ))
   stacks[[ move$to ]] <- c( stacks[[ move$to ]], crate_list )
 }
 
-stacks |> map(last) |>unlist() |> paste( collapse="")
+stacks |> map_chr(last) |> paste( collapse="")
