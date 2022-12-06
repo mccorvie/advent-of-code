@@ -32,8 +32,8 @@ tibble( buf=buf) |>
 # could set nn = 4 for part 1
 nn = 14
 
-map( nn:length(buf ), ~ buf[(.x-nn+1):.x]) |>
+aa <- map( 1:length(buf ), ~ buf[max(.x-nn+1,1):.x]) |>
   map_dbl( ~ length( unique( .))) 
 
-which( aa==nn)+nn-1
+which( aa==nn)
 
