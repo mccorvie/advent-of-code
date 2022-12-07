@@ -23,9 +23,9 @@ for( line in shell_output )
     path_str <- paste( path, collapse = "/")
     all_dirs <- c( all_dirs, path_str )
   } else if( str_detect( line, "^\\d")) {
-    tibble( line = line, path = path_str ) |>
+    files <- tibble( line = line, path = path_str ) |>
       separate( line, c( "size", "filename" ), sep = " ", convert=T) |>
-      bind_rows( files, entry )
+      bind_rows( files )
   } 
 }
 
