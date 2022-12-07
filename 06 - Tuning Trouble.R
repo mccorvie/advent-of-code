@@ -29,11 +29,14 @@ tibble( buf=buf) |>
 ## Part 2
 ## 
 
+buf <- read_advent(day = 6, year=2022) |> head(-1) |>
+  str_split( raw,"")[[1]]
+
 # could set nn = 4 for part 1
 nn = 14
 
 aa <- map( 1:length(buf ), ~ buf[max(.x-nn+1,1):.x]) |>
   map_dbl( ~ length( unique( .))) 
 
-which( aa==nn)
+which( aa==nn) |> first()
 
