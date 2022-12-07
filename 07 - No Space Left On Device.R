@@ -11,7 +11,7 @@ raw <- read_advent(day = 7, year=2022) |> head(-1)
 shell_output = raw
 #output= readLines( "test07")
 
-path = NULL
+path <- NULL
 files <- tibble()
 all_dirs <- NULL
 for( line in shell_output )
@@ -23,11 +23,9 @@ for( line in shell_output )
     path_str <- paste( path, collapse = "/")
     all_dirs <- c( all_dirs, path_str )
   } else if( str_detect( line, "^\\d")) {
-    path_str <- paste( path, collapse = "/")
-    entry <- tibble( line = line, path = path_str ) |>
-      separate( line, c( "size", "filename" ), sep = " ", convert=T)
-    files <- bind_rows( files, entry )
-    cat( path_str, line, "\n")
+    tibble( line = line, path = path_str ) |>
+      separate( line, c( "size", "filename" ), sep = " ", convert=T) |>
+      bind_rows( files, entry )
   } 
 }
 
