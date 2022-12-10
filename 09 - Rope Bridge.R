@@ -35,17 +35,16 @@ moves <- str_split( input, " ") |>
   map( ~rep( .[1], strtoi( .[2]))) |>
   reduce( c)
 
-##
-## Part 1
-##
-
 U = c( 0, 1 )
 D = c( 0, -1 )
 L = c( -1, 0 )
 R = c( 1, 0 )
 
-head = c(1,1)
-tail = c(1,1)
+##
+## Part 1
+##
+
+head = tail = c(1,1)
 visited = list( tail )
 
 for( move in moves )
@@ -69,10 +68,7 @@ length( unique(visited)) # part1
 ## Part 2
 ##
 
-rope <- list()
-for( i in 1:10)
-  rope <- c( rope, list( c(1,1)))
-
+rope <- rep(list( c(1,1)),10)
 visited <- list( last(rope))
 
 for( move in moves )
