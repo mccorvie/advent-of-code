@@ -35,42 +35,32 @@ hh  <- expand_grid( row =1:nrow(hh0), col=1:ncol(hh0)) |>
   rowwise() |> 
   mutate( 
     heightL = hh0[ row,col],
-    height = match( str_replace_all( heightL, c( "S"="a", "E"="z")), letters ), 
-    dist = if_else( heightL == "E", 0, Inf )
+    height  = match( str_replace_all( heightL, c( "S"="a", "E"="z")), letters ), 
+    dist    = if_else( heightL == "E", 0, Inf )
   ) |> 
   ungroup()
 
-
-connect <- expand_grid( hh, tibble( drow = c(0,0,-1,1), dcol = c( -1,1,0,0)) ) |> 
-  mutate(
-    nb_row = row + drow,
-    nb_col = col + dcol
-  ) |> 
+neighbors <- expand_grid( hh, tibble( drow = c(0,0,-1,1), dcol = c( -1,1,0,0)) ) |> 
+  mutate( nb_row = row + drow, nb_col = col + dcol ) |> 
   left_join( select( hh, nb_row = row, nb_col = col, nb_height = height ), by = c( "nb_row", "nb_col" )) |> 
   filter( !is.na( nb_height) & nb_height - height <= 1)
 
-filter( connect, heightL == "S")
-
-converged <- F
-while( !converged )
+n_dist <- hh |> filter( !is.infinite( dist )) |> nrow() |> c(0)
+while( n_dist[1] > n_dist[2]  )
 {
-  n_dist_before <- filter( hh, !is.infinite( dist )) |> nrow()
-  hh <- connect |> 
+  hh <- neighbors |> 
     left_join( select( hh, nb_row = row, nb_col = col, nb_dist = dist ), by = c( "nb_row", "nb_col")) |> 
     group_by( row, col ) |> 
     summarize( 
-      dist = min( nb_dist) +1 ,
       heightL  = last( heightL ),
       height   = last( height ),
+      dist     = min( nb_dist) +1,
       .groups = "drop"
     ) |> 
     mutate( dist = if_else( heightL == "E", 0, dist))
   
-  n_dist_after <- filter( hh, !is.infinite( dist )) |> nrow()
-  converged    <- n_dist_after == n_dist_before
-  
-  cat( n_dist_after, " ", n_dist_after - n_dist_before, "\n") 
-  
+  n_dist <- hh |> filter( !is.infinite( dist )) |> nrow()  |> c( n_dist )
+  cat( length( n_dist ), ": ", n_dist[1], " change: ", n_dist[1] - n_dist[2], "\n") 
 }
 
 # part 1
@@ -78,7 +68,6 @@ hh |> filter( heightL == "S" ) |> pull( dist )
 
 # part 2
 hh |> filter( heightL == "S" | heightL == "a") |> summarize( min(dist ))
-
 
 
 ##
