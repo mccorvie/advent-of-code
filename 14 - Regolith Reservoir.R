@@ -46,7 +46,7 @@ input <- raw
 pp <- str_split( input,  " -> ") |> map( ~ map( str_split( ., ","  ),  strtoi ))
 pp.flat <- unlist( pp )
 xs <- seq(1,length(pp.flat), by=2)
-xoffset <- pp.flat[] |> min()-2
+xoffset <- pp.flat[xs] |> min()-2
 xmax <- pp.flat[xs]  |> max()+1
 ymax <- pp.flat[xs+1] |> max()+1
 
