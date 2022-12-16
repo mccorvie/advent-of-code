@@ -24,17 +24,12 @@ adj <- plan |>
   select( valve, tunnel) |> 
   as.matrix()
 
+# make shortest difference matrix between good nodes
 dd <- matrix( Inf, nrow=nrow( plan), ncol=nrow( plan), dimnames= list( pull( plan, valve),pull( plan, valve)))
 dd[adj] <-1
 dd[ diag( T, nrow( dd)) ] = 0
 while( any( dd == Inf))
   walk( 1:nrow( dd), \(i) walk( 1:ncol(dd), \(j) dd[i,j] <<- min( dd[i,] + dd[,j])))
-dd
-cache_path <- function( path, pressure )
-{
-  key = paste0( sort( path ), collapse= "-")
-  valveset_best[ key ] <<- max( pressure, coalesce( valveset_best[key],0))
-}
 
 evaluate_path <- function( path )
 {  
@@ -49,7 +44,6 @@ follow_path <- function( path )
 {
   if( get_length( path) >=max_t ) return( 0 )
   pressure <- evaluate_path( path )
-  if( 1673 == pressure ) cat( "******* ", path, "\n")
   if( part2 ) cache_path( path, pressure ) 
   max( pressure, map_dbl( setdiff( good_valves, path ), ~ follow_path( c( path, .))))
 }
@@ -57,19 +51,29 @@ part2 = F
 max_t <- 30
 follow_path( "AA" ) # part1
 
-valveset_best["XX"]
+
+cache_path <- function( path, pressure )
+{
+  key = paste0( sort( path ), collapse= "-")
+  valveset_best[ key ] <<- max( pressure, coalesce( valveset_best[key],0))
+}
+
+evaluate_combo <- \(idx1, idx2)
+{
+  if( length( intersect( valveset[[idx1]], valveset[[idx2]]))>1)
+    return(0)
+  valveset_best[idx1] + valveset_best[idx2]
+}
 
 part2 <- T
 max_t <- 26
 valveset_best = c( "AA" = 0 )
 follow_path( "AA" )
 
-combo_best <- 0
 valveset <- str_split( names( valveset_best), "-")
+combo_best <- 0
 for( idx1 in 1:(length( valveset )-1))
   for( idx2 in (idx1+1):length( valveset ))
-    if( length( intersect( valveset[[idx1]], valveset[[idx2]]))==1)
-      combo_best <- max( combo_best, valveset_best[idx1] + valveset_best[idx2])
-
+    combo_best <- max( combo_best, evaluate_combo( idx1, idx2 ))
 combo_best # part2 
 
