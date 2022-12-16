@@ -31,7 +31,7 @@ drop_sand <- function()
   {
     moves  <- coord[ rep(1,nrow(move_dir)),] + move_dir
     ncoord <- moves[match( ".", mm[moves] ),,drop=F]
-    if( ncoord[2] == 1 || ncoord[2] == ncol(mm) || any( is.na(ncoord)))
+    if( ncoord[1] == nrow(mm) || any( is.na(ncoord)))
       return(F)
     if( all( ncoord == coord ))
     {

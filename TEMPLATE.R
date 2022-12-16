@@ -5,8 +5,13 @@ if( file.exists("cookie.R"))
 
 library( tidyverse )
 library( adventr)
+library( unglue)
 
-raw <- read_advent(day = xx, year=2022) |> head(-1)
+raw <- read_advent(day = 15, year=2022) |> head(-1)
+test <- readLines( "test15" )
+
+input<- raw
+input <- test
 
 #dir <- "~/Desktop/aoc-input"
 #ff  <- "input01"
