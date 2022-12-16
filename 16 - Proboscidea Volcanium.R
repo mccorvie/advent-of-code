@@ -24,7 +24,7 @@ adj <- plan |>
   select( valve, tunnel) |> 
   as.matrix()
 
-# make shortest difference matrix between good nodes
+# make shortest distance matrix between good valves
 dd <- matrix( Inf, nrow=nrow( plan), ncol=nrow( plan), dimnames= list( pull( plan, valve),pull( plan, valve)))
 dd[adj] <-1
 dd[ diag( T, nrow( dd)) ] = 0
