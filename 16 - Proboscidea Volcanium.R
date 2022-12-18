@@ -1,5 +1,5 @@
-#install.packages("devtools")
-#devtools::install_github("benjaminguinaudeau/adventr")
+install.packages("devtools")
+devtools::install_github("benjaminguinaudeau/adventr")
 if( file.exists("cookie.R"))
   source( "cookie.R")
 
@@ -71,9 +71,7 @@ valveset_best = c( "AA" = 0 )
 follow_path( "AA" )
 
 valveset <- str_split( names( valveset_best), "-")
-combo_best <- 0
-for( idx1 in 1:(length( valveset )-1))
-  for( idx2 in (idx1+1):length( valveset ))
-    combo_best <- max( combo_best, evaluate_combo( idx1, idx2 ))
-combo_best # part2 
+map_dbl( combn( length(valveset), 2, simplify = F ), ~ evaluate_combo( .[1],.[2])) |> max()
+
+           
 
