@@ -79,7 +79,7 @@ while( nsteam[1] > nsteam[2])
   cat( nsteam[1], " ")
 }
 
-surface_area( droplets | !steam & !droplets ) # part 2
+surface_area( !steam  ) # part 2
 
 ##
 ##. submitted solution
