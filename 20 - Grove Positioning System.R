@@ -11,13 +11,6 @@ day = 20
 raw  <- readLines( paste0( "input", day ))
 test <- readLines( paste0( "test", day ))
 
-use_test = T
-if( use_test )
-{
-  input <- test
-} else {
-  input <- raw
-}
 
 printme = \( mixme,   pos=1)
 {
@@ -26,7 +19,7 @@ printme = \( mixme,   pos=1)
   {
    
     # cat( "(<- ", mixme[[pos]]$predpos, ")", pos, "=", mixme[[pos]]$val, " (", mixme[[pos]]$succpos, "->)" )
-   cat( mixme[[pos]]$val, " " )
+    cat( mixme[[pos]]$val, " " )
     pos = mixme[[pos]]$succpos
   }
   cat( "\n")
@@ -34,7 +27,45 @@ printme = \( mixme,   pos=1)
 }
 
 
-mixme <- map( 1:length( input), ~ list( val = strtoi( input[.] ), idx=., succpos = mixwrap( .+1), predpos = mixwrap( .-1 )))
+
+mixwrap = \(idx)  (idx -1) %% length( input) +1
+
+
+sanity = \( mixme,   pos=1)
+{
+  forward = backward = pos
+  
+  for( i in 1:(length( mixme )-1))
+  {
+    foward = mixme[[forward ]]$succpos
+    backward = mixme[[backward ]]$predpos
+    if( forward == pos || backward == pos )
+    {
+      cat( "!!! 1 ")
+      return( F )      
+    }
+  }
+  if( backward$predpos != pos || foward$succpos != pos )
+  {
+    cat( "!!! 2")
+    return( F )      
+  }
+  
+  return( T)
+}
+
+use_test = T
+if( use_test )
+{
+  input <- test
+} else {
+  input <- raw
+}
+
+
+mixme <- map( 1:length( input), ~ list( val = strtoi( input[.] ), idx=., succpos = .+1, predpos = .-1 ))
+mixme[[ 1]]$predpos = length( mixme )
+mixme[[ length( mixme )]]$succpos = 1
 
 # succ <- \(node) node["succpos"]
 # pred <- \(node) node["predpos"]
@@ -42,24 +73,43 @@ mixme <- map( 1:length( input), ~ list( val = strtoi( input[.] ), idx=., succpos
 # idx=3
 
 #cutpoint = detect( mixme, ~ .["idx"] == idx )
+part = 2
+if( part == 1)
+{
+  times = 1
+  key = 1 
+  
+} else {
+  
+  
+  key = 811589153
+  times = 10
+}
 
+
+for( t in 1:times )
 for( pos in 1:length( mixme ))
 {
+  # if( !sanity( mixme ))
+  #   break
+  
   cutpoint = mixme[[pos]]
   if( cutpoint$val == 0 )
     next
-  cutpoint
+
   # cut
   mixme[[ cutpoint$predpos ]]$succpos = cutpoint$succpos
   mixme[[ cutpoint$succpos ]]$predpos = cutpoint$predpos
   
-  mixme
-  cutpoint
+  dpos = cutpoint$val
+  if( part == 2 )
+    dpos = sign( dpos ) * ( ( dpos * key -1 )%% (length( mixme)-1)+1)
+
   
   inspoint = pos
-  if( sign( cutpoint$val) > 0 )
+  if( sign( dpos ) > 0 )
   {
-    for( i in 1:abs( cutpoint$val ))
+    for( i in 1:abs( dpos  ))
       inspoint = mixme[[inspoint]]$succpos
     inspoint 
     mixme[[inspoint]]
@@ -70,7 +120,7 @@ for( pos in 1:length( mixme ))
     mixme[[ inspoint ]]$succpos = pos
     
   } else {
-    for( i in 1:abs( cutpoint$val ))
+    for( i in 1:abs( dpos ))
       inspoint = mixme[[inspoint]]$predpos
     
     mixme[[ pos ]]$predpos = mixme[[ inspoint ]]$predpos
@@ -79,23 +129,22 @@ for( pos in 1:length( mixme ))
     mixme[[ inspoint ]]$predpos = pos
   }
   
- # printme( mixme )
-  # while( )
-  # cat( map_dbl( mixme, ~ .$val ) , "\n")
+ #printme( mixme )
 }
-
 pos = detect_index( mixme, ~ .$val == 0)
 out = 0
 for( times in 1:3 )
 {
   for( i in 1:1000 )
     pos = mixme[[pos]]$succpos
-  cat( mixme[[pos]]$val, " " )
-  out = out + mixme[[pos]]$val
+  cat( mixme[[pos]]$val * key, " " )
+  out = out + mixme[[pos]]$val* key
   
 }
 printme( mixme)
 cat( out, "\n")
+
+
 
 # 1611
 
@@ -104,18 +153,18 @@ mixme[[ idx ]]$succpos = inspoint$
 mixme[[ inspoint$succpos ]]$predpos = idx
 mixme[[ inspoint$predpos ]]$succpos = idx
 
+any( strtoi( input ) * 811589153 %% length( input) ==0 & input != 0)
 
-
+811589153 %% length( input)
+length( input)
 ##
 ## subsetting manipulations
 ##
-mixme <- strtoi( input)
 
 
 mixed_indices <- 1:length( mixme)
 
 
-mixwrap = \(idx)  (idx -1) %% length( mixme) +1
 
 for( idx in 1:length( input ))
 {
