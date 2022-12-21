@@ -66,10 +66,9 @@ for( pos in 1:length( mixme ))
   {
     for( i in 1:abs( dpos  ))
       inspoint = mixme[[inspoint]]$succpos
-    mixme[[inspoint]]
+
     mixme[[ pos ]]$succpos = mixme[[ inspoint ]]$succpos
     mixme[[ pos ]]$predpos = inspoint
-    
     mixme[[ mixme[[ inspoint ]]$succpos ]]$predpos = pos
     mixme[[ inspoint ]]$succpos = pos
     
@@ -94,7 +93,6 @@ for( times in 1:3 )
     pos = mixme[[pos]]$succpos
   cat( mixme[[pos]]$val * key, " " )
   out = out + mixme[[pos]]$val* key
-  
 }
 #printme( mixme)
 print( out, digits=20 )

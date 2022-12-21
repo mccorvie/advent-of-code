@@ -7,10 +7,14 @@ library( tidyverse )
 library( adventr)
 library( unglue)
 
+options(digits=20)
+
 day = XX
-raw  <- read_advent(day = day, year=2022) |> head(-1)
+# adventr requests are being blocked
+#raw  <- read_advent(day = day, year=2022) |> head(-1)
+raw  <- readLines( paste0( "input", day ))
 test <- readLines( paste0( "test", day ))
 
-input<- raw
-input <- test
+use_test = T 
+input = if( use_test ) test else raw
 
