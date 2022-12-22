@@ -23,9 +23,9 @@ monkeys <- unglue_data(input, "{name}: {formula}") |>
 calculate <- \( var )
 {
   expr = monkeys[ var ]
-  if( is.na( as.numeric( expr ) ))
+  if( str_detect( expr, "^[a-z]"))
   {
-    vars = list( str_sub( expr, 1,4),  str_sub( expr, length( expr)-5))
+    vars = list( str_sub( expr, 1,4),  str_sub( expr, 8))
     map_dbl( vars, calculate  )
   }
   out = eval( parse( text = paste0( var, "<<-", expr )))
@@ -34,15 +34,15 @@ calculate <- \( var )
 
 calculate( "root") #part1
 
-solver <- function( x )
+solver <- \( x )
 {
   monkeys[ "humn"] <<- paste( x )
   calculate( "root")
 }
 
 root_expr <- str_split( monkeys[ "root"], " ")[[1]]
-monkeys[ "root"] = paste0( root_expr[1], " - ", root_expr[3])
-xx<-uniroot( solver, c( 1e10, 1e20)) 
+monkeys[ "root"] <- paste0( root_expr[1], " - ", root_expr[3])
+xx <- uniroot( solver, c( 1e10, 1e20)) 
 round( xx$root) # part 2
 
 ##
