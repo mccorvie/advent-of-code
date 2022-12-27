@@ -30,5 +30,5 @@ R solutions to the advent of code puzzles [https://adventofcode.com/](https://ad
 | 21  |    ⭐    |    ⭐    |  
 | 22  |    ⭐    |          |
 | 23  |    ⭐    |    ⭐    |  
-| 24  |          |          |
+| 24  |    ⭐    |    ⭐    |  
 | 25  |    ⭐    |          |
