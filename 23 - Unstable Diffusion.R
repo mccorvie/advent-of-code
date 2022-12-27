@@ -59,10 +59,11 @@ row_offsets  = list( -1, 1, c( -1,0,1), c(-1,0,1))
 col_offsets  = list(  c( -1,0,1), c(-1,0,1), -1, 1 )
 get_move = \(mm ) if( length( mm )==1 ) mm else 0
 
-t<-0
+tt<-0
 repeat
 {
-  t<-t+1
+  tt<-tt+1
+  # if( tt > 10 ) break # part 1
   
   proposed <- NULL
   for( dir in 1:4 )
@@ -70,47 +71,42 @@ repeat
     blocked <- expand_grid( pos, dcol = col_offsets[[dir]], drow = row_offsets[[dir]] ) |> 
       mutate( nrow = row + drow, ncol = col + dcol )  |> 
       inner_join( pos, by = c( "nrow" = "row", "ncol" = "col")) |> 
-      select( row, col ) |> 
-      distinct( row,col ) 
+      select( row, col ) 
     
     proposed <- pos |>  
       anti_join( blocked, by = c( "row", "col") ) |> 
       mutate( nrow = row + get_move( row_offsets[[dir]] ), ncol = col + get_move( col_offsets[[dir]] )) |> 
       bind_rows( proposed )
-    
   }
   
   row_offsets <- c( tail( row_offsets,-1), head( row_offsets,1 ))
   col_offsets <- c( tail( col_offsets,-1), head( col_offsets,1 ))
-  row_offsets
 
+  # if you have 4 proposed moves, don't move, otherwise take the first move found
   pos1 <- proposed |> 
     group_by( row, col ) |>
-    mutate( n=n()) |> 
-    filter( n<4) |> 
+    filter( n()<4) |> 
     summarize( across( everything(), ~ last(.)), .groups = "drop") 
   
-  if( nrow( pos1 ) == 0)
-    break
+  if( nrow( pos1 ) == 0) break # part 2
   
-  if( t%%10 ==0 )
-    cat( t, " ", nrow( pos), " ", nrow(pos1), "\n")
+  if( tt%%10 == 0)
+    cat( tt, " ", nrow( pos), " ", nrow( pos1), "\n")
   
-  pos1 <- pos1 |> 
+  # eliminate proposed moves which conflict, add in default (no move), select move
+  pos <- pos1 |> 
     group_by( nrow, ncol ) |> 
-    mutate( n=n()) |> 
-    ungroup() |> 
-    filter( n == 1) |> 
+    filter( n()==1) |> 
     bind_rows( mutate( pos, nrow=row, ncol=col )) |> 
     group_by( row, col ) |> 
-    summarize(  across( everything(), first ), .groups = "drop") |> 
+    summarize( across( everything(), first ), .groups = "drop") |> 
     select( row=nrow, col=ncol)
-  
-  
-  #print_pos( pos1 )
-  pos<-pos1
 }
 # part 1
 (max(pos$col)-min(pos$col)+1) * (max(pos$row)-min( pos$row)+1) - nrow( pos)
 # part 2
-print_pos(pos)
+tt
+
+
+
+
