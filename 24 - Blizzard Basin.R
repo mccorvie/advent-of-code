@@ -26,38 +26,96 @@ test <- c(
 
 use_test = F
 input = if( use_test ) test else raw
-blizzard0 <- str_split( input, "", simplify = T )
 
+blizzard <- str_split( input, "", simplify = T )
+nr <- nrow( blizzard)
+nc <- ncol( blizzard)
 
-blizzard_wrap <- \(xx,width) (xx-2)%%(width-2) + 2
+idx_wrap <- \(xx,width) (xx-1)%%(width) + 1
 
-is_blizzard <- \( rr, cc, tt, dir )
+blizzN <- blizzard[2:(nr-1),2:(nc-1)] == "^"
+blizzE <- blizzard[2:(nr-1),2:(nc-1)] == ">"
+blizzS <- blizzard[2:(nr-1),2:(nc-1)] == "v"
+blizzW <- blizzard[2:(nr-1),2:(nc-1)] == "<"
+
+get_blizzard <- \(tt)
 {
-  if( cc == 1 || cc == ncol( blizzard0 ))
-    return( T )
-  if( rr == 1)
-    return( cc != 2 )
-  if( rr == nrow( blizzard0 ))
-    return( cc != ncol( blizzard0)-1)
-  if( dir == "^" )
-    rr <- blizzard_wrap( rr+tt, nrow(blizzard0))
-  if( dir == "v" )
-    rr <- blizzard_wrap( rr-tt, nrow(blizzard0))
-  if( dir == "<" )
-    cc <- blizzard_wrap( cc+tt, ncol(blizzard0))
-  if( dir == ">" )
-    cc <- blizzard_wrap( cc-tt, ncol(blizzard0))
+  nr2 <- nr-2
+  nc2 <- nc-2
+  bb <- list(
+    blizzN[ idx_wrap( 1:nr2 + tt, nr2 ), ],
+    blizzS[ idx_wrap( 1:nr2 - tt, nr2 ), ],
+    blizzE[ ,idx_wrap( 1:nc2 - tt, nc2 ) ],
+    blizzW[ ,idx_wrap( 1:nc2 + tt, nc2 ) ]
+  ) |> reduce( `|`)
   
-  (blizzard0 == dir)[rr,cc]
+  border <- c( F, rep( T, nc2-1))
+  bb <- rbind( border, bb, rev(border) )
+  bb <- cbind( rep( T, nr ), bb, rep(T,nr))
+  bb
 }
+
+
+get_adjacent <- \(adj)
+{
+  adj0 <- adj
+  c.low  <- 1:(ncol(adj)-1)
+  c.high <- c.low+1
+  r.low  <- 1:(nrow(adj)-1)
+  r.high <- r.low+1mna
+  adj[r.low,]  <- adj[r.low,]  | adj0[r.high,] # up
+  adj[r.high,] <- adj[r.high,] | adj0[r.low,]  # down
+  adj[,c.low]  <- adj[,c.low]  | adj0[,c.high] # left
+  adj[,c.high] <- adj[,c.high] | adj0[,c.low]  # right
+  adj  
+}
+
+
+make_journey <- \( r.start, c.start, r.end, c.end, t.start )
+{
+  feasible <- matrix( F, nrow = nr, ncol = nc)
+  feasible[r.start, c.start] <- T
+  tt <- t.start
+  repeat
+  {
+    tt <- tt+1
+    feasible <- get_adjacent( feasible ) & !get_blizzard( tt )
+    if( feasible[r.end, c.end])
+      return( tt )
+  }
+}                   
+
+
+t1 <- make_journey( 1,2,nr, nc-1, 0 )
+t2 <- make_journey( nr, nc-1,1,2, t1 )
+t3 <- make_journey( 1,2,nr, nc-1, t2 )
+t1 # part 1
+t3 # part 2
+
+
+##
+## Debugging
+##
+
+
+mm<-get_blizzard(9)
+mdisp <- matrix(".", nrow=nr, ncol=nc)
+mdisp[ mm ] = "#"
+walk( 1:nrow( mdisp ), \(rr) cat( paste0( mdisp[rr,], collapse="" ),"\n" ))
+
+
+
+##
+## other stuff
+##
 
 print_tt <- \( tt)
 {
-  mtot <- matrix( 0, nrow = nrow( blizzard0), ncol = ncol( blizzard0))
-  mdisp <- matrix( ".", nrow = nrow( blizzard0), ncol = ncol( blizzard0))
+  mtot <- matrix( 0, nrow = nrow( blizzard), ncol = ncol( blizzard))
+  mdisp <- matrix( ".", nrow = nrow( blizzard), ncol = ncol( blizzard))
   for( dir in c( ">", "<", "^", "v"))
   {
-    mdir <- map( 1:nrow( blizzard0 ), \(rr) map_lgl( 1:ncol( blizzard0), \(cc) is_blizzard0( rr, cc, tt, dir ))) 
+    mdir <- map( 1:nrow( blizzard ), \(rr) map_lgl( 1:ncol( blizzard), \(cc) is_blizzard( rr, cc, tt, dir ))) 
     mdir <- do.call( rbind, mdir)
     mdisp[ mdir ] <- dir
     mtot <- mtot + mdir 
@@ -68,49 +126,25 @@ print_tt <- \( tt)
 }
 
 
-get_adj <- \(adj)
+blizzard_wrapx <- \(xx,width) (xx-2)%%(width-2) + 2
+
+is_blizzard <- \( rr, cc, tt, dir )
 {
-  adj0 <- adj
-  c.low  <- 1:(ncol(adj)-1)
-  c.high <- c.low+1
-  r.low  <- 1:(nrow(adj)-1)
-  r.high <- r.low+1
-  superpos <-  adj0[r.low,] | adj0[r.high,] 
-  adj[r.low,]  <- adj[r.low,] | superpos 
-  adj[r.high,] <- adj[r.high,] | superpos 
-  superpos <-  adj0[,c.low] | adj0[,c.high]
-  adj[,c.low]  <- adj[,c.low] | superpos 
-  adj[,c.high] <- adj[,c.high] | superpos 
-  adj  
+  if( cc == 1 || cc == ncol( blizzard ))
+    return( T )
+  if( rr == 1)
+    return( cc != 2 )
+  if( rr == nrow( blizzard ))
+    return( cc != ncol( blizzard)-1)
+  if( dir == "^" )
+    rr <- blizzard_wrapx( rr+tt, nr)
+  if( dir == "v" )
+    rr <- blizzard_wrapx( rr-tt, nr)
+  if( dir == "<" )
+    cc <- blizzard_wrapx( cc+tt, nc)
+  if( dir == ">" )
+    cc <- blizzard_wrapx( cc-tt, nc)
+  
+  (blizzard == dir)[rr,cc]
 }
-
-
-make_journey <- \( r.start, c.start, r.end, c.end, t.start )
-{
-  feasible <- matrix( F, nrow = nrow(blizzard0), ncol = ncol(blizzard0))
-  feasible[r.start, c.start] <- T
-  tt <- t.start
-  repeat
-  {
-    tt <- tt+1
-    feasible <- get_adj( feasible )
-    blizzard <- map( c( ">", "<", "^", "v"), \(dir) map( 1:nrow( blizzard0 ), \(rr) map_lgl( 1:ncol( blizzard0), \(cc) is_blizzard( rr, cc, tt, dir )))) |> 
-      map( \(ll) do.call( rbind, ll)) |> 
-      reduce( `|`)
-    feasible <- feasible & !blizzard
-    if( feasible[r.end, c.end])
-      break
-    
-    cat( "to ", tt, " ", sum( feasible), "\n")
-  }
-  tt
-}                   
-
-
-t1 <- make_journey( 1,2,nrow(blizzard0), ncol( blizzard0)-1, 0 )
-t2 <- make_journey( nrow(blizzard0), ncol( blizzard0)-1,1,2, t1 )
-t3 <- make_journey( 1,2,nrow(blizzard0), ncol( blizzard0)-1, t2 )
-t1 # part 1
-t3 # part 2
-
 
