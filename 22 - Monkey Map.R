@@ -15,21 +15,6 @@ day = 22
 raw  <- readLines( paste0( "input", day ))
 test <- readLines( paste0( "test", day ))
 
-use_test = T
-sidedim = 4
-
-use_test= F
-sidedim = 50
-
-input = if( use_test ) test else raw
-
-mmap0 <- str_split( input[1:(length(input)-2)], "")
-mmap <- map_dfr( 1:length( mmap0 ), \(row) tibble( row = row,  tile = mmap0[[row]] ) |> mutate( col = row_number() ) ) 
-mmap <- mmap |> filter( tile != " ") |> mutate( name = paste0( (row -1)%/% sidedim+1, (col-1) %/% sidedim+1 ) )
-
-dist = str_extract_all( last( input ), "[:digit:]+")[[1]] |> as.numeric()
-turn = str_extract_all( last( input ), "[RL]")[[1]] |> c( "X" )
-
 
 atlas_test <- tribble(
   ~name, ~boxr, ~boxc, ~`>`, ~`>dir`, ~`v`, ~`vdir`,~`<`, ~`<dir`,~`^`,~`^dir`,
@@ -51,7 +36,26 @@ atlas_prod <- tribble(
   "41", 4,1, "32", "^", "13", "v", "12", "v", "31", "^",
 )
 
-atlas <- atlas_prod
+use_test = F
+if( use_test )
+{
+  sidedim <- 4
+  input <- test
+  atlas <- atlas_test
+  
+} else {
+  sidedim <- 50
+  input <- raw
+  atlas <- atlas_prod
+  
+}
+
+mmap0 <- str_split( input[1:(length(input)-2)], "")
+mmap <- map_dfr( 1:length( mmap0 ), \(row) tibble( row = row,  tile = mmap0[[row]] ) |> mutate( col = row_number() ) ) 
+mmap <- mmap |> filter( tile != " ") |> mutate( name = paste0( (row -1)%/% sidedim+1, (col-1) %/% sidedim+1 ) )
+
+dist = str_extract_all( last( input ), "[:digit:]+")[[1]] |> as.numeric()
+turn = str_extract_all( last( input ), "[RL]")[[1]] |> c( "X" )
 
 rotR = c( ">" = "v", "v" = "<", "<" = "^", "^" = ">")
 dir_code  <- c( ">" = 0, "v"=1, "<"=2, "^"=3)
@@ -62,7 +66,6 @@ get_face <- \( name, dir )
   face <- mmap |> filter( name == !!name ) |> arrange( col,row ) |> pull( tile ) |>  matrix( nrow = sidedim)
   rot_func[[dir]]( face )
 }
-unique( mmap$name)
 
 curface <- min( mmap$name)
 curcol <- currow <- 1
@@ -70,13 +73,14 @@ curdir <- ">"
 
 for( nn in 1:length( dist))
 {
-  cat( curface, " ", curdir, "\n")
+  if( runif(1)<1/100)
+  cat( nn, "/", length(dist), ":", curface, " ", curdir, " (", currow, ", ", curcol, ")\n")
   
   adjface <- atlas |> filter( name == curface ) |> pull( curdir  )
   adjdir  <- atlas |> filter( name == curface ) |> pull( paste0( curdir, "dir")  )
   
   chart <- cbind( get_face( curface, curdir ), get_face( adjface, adjdir ))
-  path <- chart[currow, (curcol+1):min(curcol+dist[nn]-1, ncol( chart))]
+  path <- chart[currow, (curcol+1):min(curcol+dist[nn],ncol(chart))]
   stopmove <- match(  "#", path, nomatch = length(path)+1) -1
   
   curcol <- curcol + stopmove
@@ -88,7 +92,6 @@ for( nn in 1:length( dist))
   }
 
   times = c( R=1, L=3, X=0)[ turn[nn] ]
-  times=3
   for( t in rep( 0, times) )
   {
     curdir  = rotR[ curdir ]
@@ -98,55 +101,25 @@ for( nn in 1:length( dist))
   }
 }
 
-# currow0 <- currow
-# curcol0 <- curcol
-# curdir0 <- curdir
+boxr <- atlas |> filter( name == curface ) |> pull( boxr  )
+boxc <- atlas |> filter( name == curface ) |> pull( boxc  )
 
+dirval = dir_code[curdir]
 
-currow
-curcol
-curdir
-
-currow <- currow0
-curcol <- curcol0
-curdir <- curdir0
-
-curface
-curdir0
-
-
-(3*50 + currow)*1000 + (curcol)*4 + 3
-
-nn
-rep( 1, 0)
-1:0
-length( turn)
-turn[nn]
-code = dir_code[curdir ]
 while( curdir != ">")
 {
-  
+  curdir  = rotR[ curdir ]
+  curcol0 = currow
+  currow  = sidedim +1 - curcol
+  curcol = curcol0
 }
 
-cat( curface, " ", curdir, "\n")
+((boxr-1)*sidedim + currow)*1000 + ((boxc-1)*sidedim + curcol)*4 + dirval
 
-turns[2]
-get_face( "13", ">")
-mm <- matrix( 1:9, nrow =3)
-mm[3:1,3:1] # rot 180
-t( mm)[,3:1] # rot clockwise 90
-t( mm[,3:1]) # rot counterclockwise 90
 
-currow
-curcol
-curdir
 
-rotL
-dirs
-
-rotR
 ##
-## Part 2
+## Part 1
 ##
 
 
