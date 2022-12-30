@@ -25,7 +25,7 @@ R solutions to the advent of code puzzles [https://adventofcode.com/](https://ad
 | 16  |    ⭐    |    ⭐    |  
 | 17  |    ⭐    |    ⭐    |  
 | 18  |    ⭐    |    ⭐    |  
-| 19  |          |          |
+| 19  |    ⭐    |    ⭐    |  
 | 20  |    ⭐    |    ⭐    |  
 | 21  |    ⭐    |    ⭐    |  
 | 22  |    ⭐    |          |
