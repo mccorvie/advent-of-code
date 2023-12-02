@@ -1,5 +1,5 @@
-#install.packages("devtools")
-#devtools::install_github("benjaminguinaudeau/adventr")
+# install.packages("devtools")
+# devtools::install_github("benjaminguinaudeau/adventr")
 if( file.exists("cookie.R"))
   source( "cookie.R")
 
@@ -9,12 +9,12 @@ library( unglue)
 
 options(digits=20)
 
-day = XX
-# adventr requests are being blocked
-#raw  <- read_advent(day = day, year=2022) |> head(-1)
-raw  <- readLines( paste0( "input", day ))
-test <- readLines( paste0( "test", day ))
+day <- XX
+raw <- read_advent(day = day, year=2023) |> head(-1)
 
-use_test = T 
+# raw  <- readLines( paste0( "input", day ))
+# test <- readLines( paste0( "test", day ))
+
+use_test = F
 input = if( use_test ) test else raw
 

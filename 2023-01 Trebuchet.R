@@ -7,9 +7,9 @@ library( unglue)
 
 options(digits=20)
 
-day <-1
-raw  <- readLines( paste0( "input", day ))
+day <- 1
 test <- readLines( paste0( "test", day ))
+raw <- read_advent(day = day, year=2023) |> head(-1)
 
 use_test = F
 input = if( use_test ) test else raw
@@ -17,16 +17,11 @@ input = if( use_test ) test else raw
 
 
 
-ff <- \(x) x^2
-
-
 # part 1
-
 map_chr( input, \(x) str_remove_all( x,"[a-z]")) |> 
   map_chr( \(x) paste0(  str_sub(x, 1,1), str_sub(x, -1,-1))) |> 
   as.numeric() |> 
   sum()
-
 
 # part 2
 calib_value <- function( num_str )
