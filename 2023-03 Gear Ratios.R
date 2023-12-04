@@ -19,7 +19,7 @@ use_test = F
 input = if( use_test ) test else raw
 
 part_num_loc <- str_locate_all( input, "\\d+") |> 
-  map2( 1:length(input), \(part_num0,linenum) as_tibble( part_num0 ) |> mutate( linenum=linenum)) |> 
+  map2( 1:length(input), \(part_num_line,linenum) as_tibble( part_num_line ) |> mutate( linenum=linenum)) |> 
   reduce( add_row ) |> 
   mutate( value = as.numeric( str_sub( input[linenum], start,end)))
 
@@ -37,7 +37,7 @@ symbol_loc <-  str_split( input, "" , simplify=T) |>
 1:nrow( symbol_loc) |> 
   map( \(idx) adj_num( symbol_loc[idx,] )) |> 
   reduce( add_row) |> 
-  unique() |> pull( value ) |> sum()
+  distinct() |> pull( value ) |> sum()
 
 # part 2
 star_loc <- str_split( input, "" , simplify=T) |> 
