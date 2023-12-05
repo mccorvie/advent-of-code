@@ -27,6 +27,8 @@ mine  <- str_split_i( nums, "\\|",2) |>
 
 num_match <- map2_dbl( win, mine, \(ww, mm) length( intersect( ww,mm ))) 
 
+read_delim( I(str_split_i( nums, "\\|",1))," ")
+
 # part 1
 num_match |> 
   keep( \(mm) mm > 0 ) |> 
