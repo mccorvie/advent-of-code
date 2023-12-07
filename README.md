@@ -13,7 +13,7 @@ R solutions to the advent of code puzzles [https://adventofcode.com/](https://ad
 |  4  |   ⭐     |     ⭐   |
 |  5  |   ⭐     |     ⭐   |
 |  6  |   ⭐     |     ⭐   |
-|  7  |        |        |  
+|  7  |   ⭐     |     ⭐   |
 |  8  |        |        |  
 |  9  |        |        |  
 | 10  |        |        |  
