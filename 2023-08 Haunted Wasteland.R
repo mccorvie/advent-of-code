@@ -4,7 +4,7 @@
 # devtools::install_github("benjaminguinaudeau/adventr")
 if( file.exists("cookie.R"))
   source( "cookie.R")
-
+library( pracma)
 library( tidyverse )
 library( adventr)
 library( unglue)
@@ -42,6 +42,7 @@ for( step in seq_along(idx))
   instr <- instructions[ idx[step]]
   cur   <- network[ cur, instr ]
   #if( cur == "ZZZ") break
+  
   zs <- str_detect( cur, ".*Z$")
   if( any( zs )) 
   {
@@ -60,9 +61,8 @@ first <- map_dbl( zlist, \(vv) vv[1])
 diff  <- map_dbl( zlist, \(vv) vv[2]-vv[1])
 diff
 
-first
-1491-1442
-1724-1666
+
+reduce( diff, Lcm)
 
 
 
