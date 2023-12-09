@@ -23,15 +23,11 @@ input = if( use_test ) test else raw
 
 network<-tail( input,-2) |> unglue_data( "{source} = ({L}, {R})")
 rownames( network) <- network[,"source"]
-
-
 instructions <- str_split_1( input[1],"")
-idx <- rep(1:length( instructions),20000)
-
+idx <- rep(1:length( instructions),1000)
 
 cur <- "AAA"
 cur <- network$source |> keep( \(x) str_detect( x, ".*A$" ))
-
 
 zlist <- list()
 for( ii in 1:length(cur))
@@ -53,17 +49,24 @@ for( step in seq_along(idx))
     if( all( lens >=2 ))break
   }
 }
-step
 
+step
 zlist
 
 first <- map_dbl( zlist, \(vv) vv[1])
 diff  <- map_dbl( zlist, \(vv) vv[2]-vv[1])
+first
 diff
-
 
 reduce( diff, Lcm)
 
+
+diff %% length(instructions)
+
+passes <- diff/length( instructions)
+
+prod( passes)
+reduce( passes, Lcm)
 
 
 
