@@ -5,6 +5,7 @@ if( file.exists("cookie.R"))
 
 library( tidyverse )
 library( adventr)
+library( pracma)
 library( unglue)
 
 options(digits=20)
@@ -18,6 +19,18 @@ test <- readLines( paste0( "test", day ))
 use_test = F
 input = if( use_test ) test else raw
 
+library( pracma)
+
+xx <- 1 # part 1
+xx <- 0 # part 2
+
+str_extract_all( input, "(\\-?\\d+)") |> map( as.numeric ) |> 
+  map_dbl( \( seq ) newtonInterp( seq_along( seq) / (length(seq)+1), seq, xx )) |> 
+  sum() |> round()
+
+##
+## the thing I actually used to solve the problem below
+##
 
 extrap_seq <- \(seq,back=F)
 {
