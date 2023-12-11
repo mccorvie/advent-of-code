@@ -40,8 +40,8 @@ start <- pipes=="S"
 while( T )
 {
   pipe_u = id_pipes( c( "|", "L", "J" )  )
-  pipe_d = id_pipes( c( "|", "F",  "7" ) ) 
-  pipe_r = id_pipes( c( "-", "L", "F")  )
+  pipe_d = id_pipes( c( "|", "F", "7" ) ) 
+  pipe_r = id_pipes( c( "-", "L", "F" )  )
   pipe_l = id_pipes( c( "-", "J", "7" )  )
   
   not_loop <- pipe_u & !peek_dir( "u", pipe_d | start ) | 
