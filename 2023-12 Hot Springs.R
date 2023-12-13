@@ -19,11 +19,7 @@ use_test = F
 input = if( use_test ) test else raw
 
 
-# template is a character array, ending in "."
 
-cache <<- list()
-
-is.null(cache[["??#.?"]])
 
 impossible <- function( template, spec )
 {
@@ -36,25 +32,13 @@ impossible <- function( template, spec )
 take_largest <- function( template, spec, depth =1)
 {
   key = paste0( "|",paste0( template,collapse=""), "|",paste(spec, collapse=","))
-  
-  if( !is.null( cache[[key]]))
-    return( cache[[key]])
   #  cat( strrep( " ", depth ), key, "\n", sep="")
   
-  if( impossible( template, spec)) 
-    stop( "wtf")
-    #return( 0 )
+  if( !is.null( cache[[key]])) return( cache[[key]])
+  if( length( spec) == 0) return( 1 )
 
-  if( length( spec) == 0)
-    return( 1 )
-
-  recurse <<- recurse + 1
-  if( recurse %%100000 == 0 )
-    cat( recurse, "/", length( spec), "  ")
-  
   largest_spec <- max( spec )
   largest_idx  <- which.max( spec )
-
   spec_l <- spec[ seq_along( spec )<largest_idx ]
   spec_r <- spec[ seq_along( spec )>largest_idx ]
 
@@ -63,7 +47,6 @@ take_largest <- function( template, spec, depth =1)
   {
     template_l <- template[ seq_along( template) < start_pos ]       
     template_r <- template[ seq_along( template) > start_pos+largest_spec ] 
-    
     if( 
       impossible( template_l, spec_l) ||
       impossible( template_r, spec_r) ||
@@ -74,16 +57,15 @@ take_largest <- function( template, spec, depth =1)
 
     total <- total + take_largest( template_l , spec_l, depth+1) * take_largest( template_r, spec_r, depth+1)
   }
-  
   cache[[key]] <<- total
   total
 }
 
-
+# part 1
 templates <- input |> str_split( " ") |> map_chr( \(v) v[1] )
 specs     <- input |> str_split( " ") |> map(  \(v) as.numeric(str_split_1( v[2], ",")))
 
-
+#part 2
 templates <- input |> str_split( " ") |> map_chr( \(v) paste( rep( v[1], 5), collapse = "?") )
 specs     <- input |> str_split( " ") |> map(  \(v) rep( as.numeric( str_split_1( v[2], ",")),5))
 
@@ -91,16 +73,12 @@ cache <- list()
 tt<-0
 for( idx in seq_along( templates))
 {
-  recurse <- 0
-  template_chr <- templates[idx]
-  template <- c( str_split_1( template_chr, ""), ".")
+  # the search logic above assumes all blocks can end in "."
+  template <- c( str_split_1( templates[idx], ""), ".")
   spec     <- specs[[idx]]
   res <- take_largest( template, spec)
-  cat( idx , "/", length( templates ), "****** ", res, "\n")
   tt <- tt + res
 }
-
-tt
 
 
 
