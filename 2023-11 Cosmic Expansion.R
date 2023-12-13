@@ -16,9 +16,11 @@ raw <- read_advent(day = day, year=2023) |> head(-1)
 test <- readLines( paste0( "test", day ))
 
 use_test = F
-input = if( use_test ) test else raw
-image <- str_split( input, "", simplify = T) == "#"
 
+input = if( use_test ) test else raw
+
+
+image <- str_split( input, "", simplify = T) == "#"
 empty_x <- !apply( image, 1, any )
 empty_y <- !apply( image, 2, any )
 coords  <- which( image, arr.ind=T) 
@@ -38,5 +40,3 @@ crossing( g1= 1:nrow( coords), g2=1:nrow(coords)) |>
   ungroup() |> 
   summarize( sum = sum( dist ))
     
-
-
