@@ -19,8 +19,6 @@ use_test = F
 input = if( use_test ) test else raw
 
 
-
-
 col_roll <- \(col)
 {
   col <- c( "#", col )
