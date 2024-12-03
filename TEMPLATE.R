@@ -1,5 +1,5 @@
-# install.packages("devtools")
-# devtools::install_github("benjaminguinaudeau/adventr")
+#install.packages("devtools")
+#devtools::install_github("benjaminguinaudeau/adventr")
 if( file.exists("cookie.R"))
   source( "cookie.R")
 
