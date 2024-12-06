@@ -53,7 +53,6 @@ count<-0
 for( r in 1:puzzle_size)
   for( c in 1:puzzle_size)
   {
-    cat( r,c,"\n")
     words <- map( strokes, \(ss) stroke_word(puzzle,r,c,ss))
     if( all(words == "MAS" | words == "SAM"))
       count <- count+1
