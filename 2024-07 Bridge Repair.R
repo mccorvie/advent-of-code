@@ -22,8 +22,6 @@ pp      <- input |> map( \(ss) str_split_1( ss, " ") )
 testvals <- pp |> map_dbl( \(xx) xx[1] |> str_sub( end=-2) |> as.numeric())
 term_lists <- pp |> map( \(xx) xx[-1] |> as.numeric()) 
 
-
-
 find_expr <- \( testval, term_list )
 {
 #  cat( testval, "?=", term_list, "\n")
@@ -44,17 +42,14 @@ find_expr <- \( testval, term_list )
     return( T )
       
   testval > last_term && find_expr( testval - last_term, terms_left )
-
 }
 
-
-# testval = testvals[5]
-# term_list = term_lists[[5]]
-# find_expr( testval, term_list)
-
-part2 <<- F
+part2 <<- T
+#part2 <<- F
 found <- map2_lgl( testvals, term_lists, find_expr ) 
-sum( found * testvals) #part 1
+sum( found * testvals)
+
+
 
 part2 <<- T
 found <- map2_lgl( testvals, term_lists, find_expr ) 

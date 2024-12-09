@@ -25,21 +25,13 @@ grid_t <- input |> map( \(ss) tibble( map = str_split_1( ss, ""), c=1:str_length
 
 stations <- grid_t |> filter( map != ".")
 
-stations |> rename( r2=r, c2=c) |> 
-  left_join(stations, by = "map", relationship = "many-to-many") |> 
-  filter( r != r2 | c != c2) |> 
-  mutate( r_antinode = 2*r-r2, c_antinode = 2*c-c2) |> 
-  select( r_antinode, c_antinode ) |> 
-  distinct() |> 
-  filter( r_antinode <= dim, c_antinode <= dim, r_antinode >= 1, c_antinode >=1  ) |> 
-  summarize( n())
-
-
+harmonics <- 2  # part 1
+harmonics <- 1:dim # part 2
 
 stations |> rename( r2=r, c2=c) |> 
   left_join(stations, by = "map", relationship = "many-to-many") |> 
   filter( r != r2 | c != c2) |> 
-  expand_grid( d = 1:dim) |> 
+  expand_grid( d = harmonics) |> 
   mutate( r_antinode = r + d * (r2-r), c_antinode = c + d* (c2-c)) |> 
   select( r_antinode, c_antinode ) |> 
   distinct() |> 
