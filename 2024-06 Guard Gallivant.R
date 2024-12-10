@@ -15,7 +15,7 @@ raw <- read_advent(day = day, year=2024) |> head(-1)
 
 test <- readLines( paste0( "test", day ))
 
-use_test = T
+use_test = F
 input = if( use_test ) test else raw
 
 
@@ -27,25 +27,32 @@ input = if( use_test ) test else raw
 
 rotate_90 <- \(mat) t(mat)[nrow(mat):1,]
 
+
 trace_route <- \(mm)
 {
-  visited0 <- matrix( F, nrow=nrow(mm), ncol=ncol(mm))
+  visited0 <- matrix( 0, nrow=nrow(mm), ncol=ncol(mm))
+  visited_list <- list()
   visited <- mm == "^"
   mm[visited] <- "." 
   pos         <- which( visited, arr.ind=T)[1,] |> as.list()
   cnt<-0
   while( T )
   {
+    cnt <- cnt%%4 + 1
     col     <- mm[,pos$col]
     segment <- cumsum( col !=".")
     trip    <- (1:nrow( mm))<=pos$row & ( col == "." ) & (segment == segment[pos$row])
     pos$row <- first( (1:nrow(mm))[trip])
+    
+    tag <- paste0( cnt, "-", pos$row, ",", pos$col)
 
-    if( visited0[ pos$row, pos$col ] )
-      return( list( visted = visited, visted0=visited0, mm = mm ) )
+    if( !is.null( visited_list[[tag]] ))
+      return( -1 )
+#      return( list( visted = visited, visted0=visited0, mm = mm ) )
 
     visited[ trip, pos$col] <- T
-    visited0[ pos$row, pos$col ] <- T
+    visited_list[[tag]] <- T
+    visited0[ pos$row, pos$col ] <- cnt
     
     if( pos$row ==1)
       return( sum( visited ))
@@ -66,6 +73,8 @@ part1
 
 part2 <- 0
 for( r in 1:nrow(mm))
+{
+  cat( r, " " )
   for( c in 1:ncol(mm))
   {
     if( mm0[r,c] != ".")
@@ -78,11 +87,8 @@ for( r in 1:nrow(mm))
       part2 <- part2+1
     }
   }
+}
 
 
-mm <- mm0
-mm[2,6] <- "O"
-tt <- trace_route(mm) 
-tt  
 
 part2
