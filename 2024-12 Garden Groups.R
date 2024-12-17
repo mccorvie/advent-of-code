@@ -39,6 +39,7 @@ shift_diff <- \( coord_set, shift_dir )
 }
 
 coords <- map( 1:nrow(garden), \(r) map( 1:ncol(garden), \(c) round(c(r,c)))) |> reduce( c)
+
 price1  <- 0 
 price2  <- 0 
 while( length( coords ) > 0)
