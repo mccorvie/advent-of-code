@@ -77,7 +77,9 @@ A <-data[[1]]
 B <- data[[2]]
 C <- data[[3]]
 instr <- data[[5]]
-
+C <-0
+B <-0
+A <-265061364597659
 
 pos <- 0
 total_out <-c()
@@ -112,3 +114,73 @@ paste0(instr,collapse=",")
 # 0 3   adv 3    A <- A / 8
 # 5 5   out B    out B %% 8
 # 3 0   jnz      if(A!=0) loop
+#A <- 0
+#itwShiftL(A,)
+#A <- rep(F,10)
+
+#A_low xor A << (7-A_low) = out
+
+
+#all(c( F,F,F) == c(NA,F,F),na.rm=T)
+
+bincode <- \(x) c( x%%2, (x%/%2)%%2,(x%/%4)%%2 )
+
+
+A = rep(0,10)
+
+#cdv2   <- \(A,n) c(A,rep(F,n+3))[(n+1):(n+3)]
+cdv2   <- \(A,n) A[(n+1):(n+3)]
+shiftl <- \(A,n) c( rep(NA,3),A )
+
+
+tt <- bincode(0)
+map2( Bs,Cs, \(v1,v2) binsolve( v1,v2,tt))
+
+# fill in NA's in v2 to solve v1 xor v2 = tt, or return NA if impossible
+binsolve <- \(v1,v2,tt)
+{
+  xor1 <- v1 & !v2 | !v1 & v2
+  xor2 <- v1 & !tt | !v1 & tt
+  if( any( xor1 != tt, na.rm=T )) return( NA )
+  return( xor2 )
+}
+
+binsolvable <- \(n,A,tt)
+{
+  v1 <- bincode( n )
+  v2 <- cdv2( c(v1, A), 7-n)
+  xor <- (v1+v2)%%2
+  if( any(is.na(xor))) 
+    stop( paste0( c(n, " ", A, " ", t), collapse = ""))
+  all( xor == bincode( tt ))
+}
+
+
+match_output <- \(output, A, first=F)
+{
+  # output <- c(3,0)
+#   A <- c( rep(1,3),rep(0,10))
+#  cat( length(output), " ")
+  if( length(output)==0)
+    return(A)
+  
+  tt     <- last(output)
+  output <- head(output,-1)
+
+  Bs <- keep( 0:7, \(n) binsolvable( n, A, tt))
+  for( B in Bs )
+  {
+    if( B==0 && all(A==0)) next
+    Aout <- match_output( output, c( bincode(B), A))
+    if( !is.null(Aout)) return( Aout )
+  }
+  NULL
+}
+
+A <- rep( 0,10)
+
+real_output <- c(2,4,1,7,7,5,1,7,4,6,0,3,5,5,3,0)
+
+xx <-match_output( real_output, A,T)
+xx
+sum(2^(0:(length(xx)-1))*xx)
