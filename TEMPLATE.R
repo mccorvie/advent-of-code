@@ -13,7 +13,7 @@ day <- XX
 raw <- read_advent(day = day, year=2024) |> head(-1)
 # raw  <- readLines( paste0( "input", day ))
 
-test <- readLines( paste0( "test", day ))
+test <- readLines( paste0( "test", day, "" ))
 
 use_test = F
 input = if( use_test ) test else raw

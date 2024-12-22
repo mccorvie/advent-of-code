@@ -59,9 +59,9 @@ for( t in 1:(roomh*roomw))
   
 }
 
-pos <- calc_pos(7572)
+pos <- calc_pos(7572) |> mutate( yn = -y)
 
-ggplot( pos, aes(x,y)) + geom_point( )
+ggplot( pos, aes(x,yn)) + geom_point( )
 
 
 
