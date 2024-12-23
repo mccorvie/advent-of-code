@@ -177,10 +177,9 @@ match_output <- \(output, A, first=F)
   NULL
 }
 
-A <- rep( 0,10)
+Abits <- rep( 0,10)
 
 real_output <- c(2,4,1,7,7,5,1,7,4,6,0,3,5,5,3,0)
 
-xx <-match_output( real_output, A,T)
-xx
+xx <- match_output( real_output, Abits,T)
 sum(2^(0:(length(xx)-1))*xx)
