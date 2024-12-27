@@ -29,9 +29,8 @@ n_possible <- \(design, depth=1)
   
   starts <- patterns[ str_starts( design, patterns)]
   
-  nn     <- map_dbl( starts, \(s) n_possible( str_sub(design, str_length(s)+1) )) |> sum()
-  pcache[[design]] <<- nn
-  nn
+  pcache[[design]] <<- map_dbl( starts, \(s) n_possible( str_sub(design, str_length(s)+1) )) |> sum()
+  pcache[[design]]
 }
 
 patterns <- tibble( pattern=patterns ) |> mutate( len = str_length(pattern)) |> arrange( len) |> pull( pattern)
@@ -40,7 +39,8 @@ pcache   <- list()
 for( pattern in patterns )
   pcache[[pattern]] <- n_possible( pattern) + 1
 
+ways <- map_dbl( designs, n_possible ) 
 
-
-map_dbl( designs, n_possible ) |> sum()
-
+sum( ways != 0 ) # part 1 
+sum( ways ) # part 2
+length(pcache)
