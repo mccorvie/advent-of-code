@@ -85,7 +85,6 @@ push_boxes_big <- \( warehouse, pos, move, first=F)
   box_stack <- path_to_edge[1:(gap-1)]
   if( any( box_stack == "#" )) return( NA )
 
-  warehouse[ coords[1:gap,,drop=F]] <- c( ".", box_stack )
   
   if( move == "^" || move =="v")
   {
@@ -97,17 +96,34 @@ push_boxes_big <- \( warehouse, pos, move, first=F)
       if( any( is.na(warehouse))) return( NA )
     }
     
-    half_box <- which( box_stack == other_half[[first_box]] ) |> first()
-    half_box 
-    if( !is.na(half_box ))
+    half_boxes <- which( box_stack != lag(box_stack, default = box_stack[1]))
+    for( half_box in half_boxes )
     {
-      push_pos  <- pos + other_half_dpos[[ other_half[[first_box]] ]] + (half_box-1)*dpos
+      push_pos  <- pos + other_half_dpos[[ box_stack[half_box] ]] + (half_box-1)*dpos
       warehouse <- push_boxes_big( warehouse, push_pos, move )
       if( any( is.na(warehouse))) return( NA )
     }
   }
   
+  warehouse[ coords[1:gap,,drop=F]] <- c( ".", box_stack )
+  
   return( warehouse )
+}
+
+
+sanity <- \(warehouse)
+{
+  box_loc <- which( warehouse == "[", arr.ind=T) 
+  box_loc[,2] = box_loc[,2]+1
+  if( any( warehouse[ box_loc] != "]"))
+    return( F )
+
+  box_loc <- which( warehouse == "]", arr.ind=T) 
+  box_loc[,2] = box_loc[,2]-1
+  if( any( warehouse[ box_loc] != "["))
+    return( F )
+
+  T  
 }
 
 input_gap <- which( input == "")
@@ -118,12 +134,17 @@ dim       <- dim(warehouse)
 pos       <- which( warehouse== "@", arr.ind=T) 
 warehouse[pos] <- "."
 moves     <- input[(input_gap+1):length(input)] |> str_split( "") |> unlist()
+length(moves)
+moves
 
 
 for( move in moves )
 {
- # cat( "move ", move, "\n")
-#  print_warehouse( warehouse, pos )
+   cat( "move ", move, "\n")
+   print_warehouse( warehouse, pos )
+   
+   if( !sanity(warehouse)) error("not sane")
+   
 #  move <- moves[6]
   
   warehouse0 <- push_boxes_big(warehouse,pos,move,T)
