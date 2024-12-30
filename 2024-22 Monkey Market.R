@@ -27,12 +27,8 @@ evolve <- \(n)
   n
 }
 
-
 evolve2000 <- \(n, last = T)
 {
-  cnt<<-cnt+1
-  if( cnt%%100 == 0 )
-    cat( cnt, "\n")
   n_hist <- c( n )
   for( k in 1:2000)
     n_hist <- c( n_hist, evolve( last( n_hist )))
@@ -40,8 +36,7 @@ evolve2000 <- \(n, last = T)
   n_hist
 }
 
-#part 1
-input |> as.numeric() |> evolve2000() |> sum()
+input |> as.numeric() |> evolve2000() |> sum() #part 1
 
 key <- \(v) paste0( v, collapse = ",")
 
@@ -70,5 +65,7 @@ tt<- input |> as.numeric() |> map( make_price_table )
 tt <- tt |> reduce( \(t1,t2) full_join( t1,t2, by= c("l1","l2","l3","l4"))) |> 
   mutate( bananas = rowSums( across(starts_with("price")), na.rm=T))
 
-tt |> summarize(bananas = max(bananas))
+tt |> summarize(bananas = max(bananas)) #part 2
+
+
 
