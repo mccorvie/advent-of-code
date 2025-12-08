@@ -157,10 +157,10 @@ device_expression <- \(var, depth )
 }
 
 
-swap_instr( "z07", "c08")
+swap_instr( "z07", "c08" )
 swap_instr( "z24", "fpq" )
 swap_instr( "z32", "srn" )
-swap_instr( "pcp","fgt")
+swap_instr( "pcp", "fgt" )
 
 map_chr( 0:45, \(n) device_expression( sprintf("z%02d",n),1))
 map_chr( 0:45, \(n) device_expression( sprintf("c%02d",n),2))

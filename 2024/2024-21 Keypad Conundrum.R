@@ -18,66 +18,74 @@ test <- readLines( paste0( "test", day, "a" ))
 use_test = T
 input = if( use_test ) test else raw
 
-dir <- list( "v" = c(1,0), ">"= c(0,1), "^" = c(-1,0), "<" = c(0,-1))
 
 alpha_keys <- c( "7","4","1",NA,"8","5","2","0","9","6","3","A") |> matrix( ncol=3)
-alpha_keys
 arrow_keys <- c( NA, "<", "^", "v", "A", ">") |> matrix( nrow =2)
-arrow_keys
 alpha <- sort( alpha_keys)
 arrow <- sort( arrow_keys )
-alpha
-from <- "A"
-to   <- "5"
+dir <- list( "v" = c(1,0), ">"= c(0,1), "^" = c(-1,0), "<" = c(0,-1))
 
 alpha_seq <- \(from,to)
 {
-#  debugtext <- paste0( from, "->", to, " " )
-  debugtext <- ""
   dd <- which( alpha_keys == to, arr.ind=T )-which( alpha_keys == from, arr.ind=T )
   vert  <- rep( ifelse( dd[1] < 0, "^", "v"), abs( dd[1])) |> paste0(collapse="")
   horiz <- rep( ifelse( dd[2] < 0, "<", ">"), abs( dd[2])) |> paste0(collapse="")
-  if( dd[1] <0 ) return( paste0( debugtext, vert, horiz, "A"))
-  return( paste0( debugtext, horiz,vert, "A"))
+  hfirst <- paste0( horiz, vert, "A" )
+  vfirst <- paste0( vert, horiz, "A" )
+  if( hfirst == vfirst ) return( vfirst )
+  if( from[2] == 1 && to[1] == 4  ) return( hfirst )
+  if( to[2] == 1   && from[1] == 4) return( vfirst )
+  return( c( hfirst,vfirst))
 }
-
-map( alpha, \(to) map_chr( alpha, \(from) alpha_seq(to,from) ))
-alpha
 
 arrow_seq <- \(from,to)
 {
   dd <- which( arrow_keys == to, arr.ind=T )-which( arrow_keys == from, arr.ind=T )
   vert  <- rep( ifelse( dd[1] < 0, "^", "v"), abs( dd[1])) |> paste0(collapse="")
   horiz <- rep( ifelse( dd[2] < 0, "<", ">"), abs( dd[2])) |> paste0(collapse="")
-  if( dd[1] <0 ) return( paste0( debugtext, horiz, vert, "A"))
-  return( paste0( debugtext, vert, horiz, "A"))
+  hfirst <- paste0( horiz, vert, "A" )
+  vfirst <- paste0( vert, horiz, "A" )
+  if( hfirst == vfirst ) return( vfirst )
+  if( from[2] == 1 && to[1] ==1 ) return( hfirst)
+  if( to[2] == 1   && from[1] ==1 ) return( vfirst )
+  return( c(hfirst,vfirst))
 }
 
-map( arrow, \(to) map_chr( arrow, \(from) arrow_seq(to,from) ))
+expand_combos <- \(chr1, chr2) map( chr1, \(c1) map_chr( chr2, \(c2) paste0( c1,c2))) |> unlist()
 
-expand_seq <- \(seq, map_fun) 
+expand_seq <- \(seq_list, map_fun) 
 {
-  seq <- c("A", str_split_1( seq, "" ))
-  map_chr( 1:(length(seq)-1), \(n) map_fun( seq[n], seq[n+1])) |> paste0(collapse="")
+  out <- character()
+  for( seq in seq_list )
+  {
+    seq <- c("A", str_split_1( seq, "" ))
+    out <- c( out, map( 1:(length(seq)-1), \(n) map_fun( seq[n], seq[n+1])) |> reduce( expand_combos ))
+  }
+  out
 }
+
+seq <- "379A"
+seq |> expand_seq( alpha_seq )|> expand_seq( arrow_seq ) 
+  
+expanded <- seq |> expand_seq( alpha_seq ) |> expand_seq( arrow_seq ) |> expand_seq(arrow_seq)
+expanded |> map( \(x) execute_arrow( x, alpha=F)) |> 
 
 complexity <- \(seq)
 {
-  in_seq <- seq |> expand_seq( alpha_seq ) |> expand_seq( arrow_seq ) |> expand_seq(arrow_seq)
-  a <- str_length( in_seq )
-  b <- as.numeric( str_sub( seq, 1,-2 ))
-  cat( seq, "->", a, " * ", b, "=", a*b, "\n")
-  a*b
+  len <- seq |> expand_seq( alpha_seq ) |> expand_seq( arrow_seq ) |> expand_seq(arrow_seq) |> 
+    map_dbl( str_length ) |> min()
+  val <- as.numeric( str_sub( seq, 1,-2 ))
+  cat( seq, "->", len, " * ", val, "=", len*val, "\n")
+  len*val
 }
-
+input
 input |> map_dbl( complexity) |> sum()
 
-68 * 29 + 60 * 980 + 68 * 179 + 64 * 456 + 64 * 379
 
 debugtext <- paste0( from, " -> ", to, ": " )
 debugtext <- ""
 
-execute_arrow <- \(seq,alpha=F)
+execute_arrow_1 <- \(seq,alpha=F)
 {
   if( alpha ) {
     mm <- alpha_keys
@@ -98,6 +106,8 @@ execute_arrow <- \(seq,alpha=F)
   }
   out
 }
+
+
 seq <- "379A"
 #in_seq <- 
 
