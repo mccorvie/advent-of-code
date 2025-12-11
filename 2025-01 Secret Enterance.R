@@ -18,14 +18,17 @@ test <- readLines( paste0( "test", day, "a" ))
 use_test = F
 input = if( use_test ) test else raw
 
-turns <- input |> str_replace( "L","-") |> str_replace( "R","+") |> as.numeric()
-sum( cumsum( c( 50, turns))%% 100==0 )
+tt <- tibble( input = input ) |> 
+  mutate( 
+    turn = input |> str_replace( "L","-") |> str_replace( "R","+") |> as.numeric(),
+    cur = cumsum( c( 50, head(turn,-1 ))),
+    shift = (turn < 0) * sign(turn),
+    span   = abs( (cur+shift) %/% 100 - (cur+turn+shift)%/%100 ),
+    touch  = (cur+turn) %% 100 == 0 
+  ) 
 
+touches <- tt |> pull( touch ) |> sum()
+spans   <- tt |> pull(span) |> sum()
 
-zero_passes <- \( start, change )
-{
-  whole_spins <- change %/% 100
-  change  <- change %% 100
-}
-
--920 %/% 100
+touches
+total
