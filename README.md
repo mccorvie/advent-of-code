@@ -8,7 +8,7 @@ R solutions to the advent of code puzzles [https://adventofcode.com/](https://ad
 | Day | Part 1 | Part 2 |
 |:---:|:--------:|:--------:|
 |  1  |   ⭐  |    ⭐ |
-|  2  |     |     |
+|  2  |   ⭐  |    ⭐ |
 |  3  |     |     |
 |  4  |     |     |
 |  5  |     |     |

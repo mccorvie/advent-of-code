@@ -27,8 +27,5 @@ tt <- tibble( input = input ) |>
     touch  = (cur+turn) %% 100 == 0 
   ) 
 
-touches <- tt |> pull( touch ) |> sum()
-spans   <- tt |> pull(span) |> sum()
-
-touches
-total
+tt |> pull( touch ) |> sum() # part1
+tt |> pull(span) |> sum() #part2
