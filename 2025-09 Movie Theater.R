@@ -23,29 +23,29 @@ nt <- nrow( coords)
 
 area <- expand_grid( a=1:nt, b=1:nt) |> filter( a>b) |> 
   left_join( coords, by = join_by( a == id)) |> 
-  rename( xa=x,ya=y ) |> 
+  rename( x1=x,y1=y ) |> 
   left_join( coords, by = join_by( b == id)) |> 
-  rename( xb=x,yb=y ) |> 
-  mutate( area = (abs(xa-xb)+1)*(abs(ya-yb)+1)) |> 
+  rename( x2=x,y2=y ) |> 
+  mutate( area = (abs(x1-x2)+1)*(abs(y1-y2)+1)) |> 
   arrange( -area )
 
 area |> first() |> pull( area) # part 1
 
 segments <- coords |> 
-  rename( x1 = x, y1=y ) |> 
+  rename( seg_x1 = x, seg_y1 = y ) |> 
   mutate( next_id = id%%nt+1 ) |> 
   left_join( coords, by=join_by( next_id ==id )) |> 
-  rename( x2=x, y2=y) |> 
+  rename( seg_x2=x, seg_y2 = y) |> 
   select( -next_id)
 
 rect_analysis <- expand_grid( area, tt=1:nt) |> 
   left_join( segments, by = join_by( tt == id)) |> 
-  group_by( a, b, xa, ya, xb, yb, area ) |> 
+  group_by( a, b, x1, y1, x2, y2, area ) |> 
   mutate( 
-    disjoint = pmax(xa, xb) <= pmin( x1,x2) |
-      pmax(x1,x2) <= pmin( xa,xb) |
-      pmax(ya,yb) <= pmin( y1,y2) |
-      pmax(y1,y2) <= pmin( ya,yb)
+    disjoint = pmax(x1, x2) <= pmin( seg_x1,seg_x2) |
+      pmax(seg_x1,seg_x2) <= pmin( x1,x2) |
+      pmax(y1,y2) <= pmin( seg_y1,seg_y2) |
+      pmax(seg_y1,seg_y2) <= pmin( y1,y2)
   ) |>
   summarize( covered = all( disjoint )) |> 
   filter( covered ) |> 
