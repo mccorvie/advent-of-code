@@ -30,7 +30,6 @@ accessible <- \( coords ) sum( mm[ mask + rep( coords,each=8) ] == "@" ) < 4
 
 keep( 1:nrow(ats), \(nn) accessible( ats[nn,])) |> length() # part 1
 
-
 n_ats0 <- nrow( ats )
 old <- n_ats0+1
 while( nrow( ats )< old)
