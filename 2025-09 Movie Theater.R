@@ -15,7 +15,7 @@ raw <- read_advent(day = day, year=2025) |> head(-1)
 
 test <- readLines( sprintf("test%02da", day))
 
-use_test = T
+use_test = F
 input = if( use_test ) test else raw
 
 coords <- input |> unglue_data( "{x},{y}", convert = T) |> as_tibble() |> mutate( id = 1:n())
@@ -42,23 +42,15 @@ rect_analysis <- expand_grid( area, tt=1:nt) |>
   left_join( segments, by = join_by( tt == id)) |> 
   group_by( a, b, xa, ya, xb, yb, area ) |> 
   mutate( 
-    disjoint = max(xa, xb) <= min( x1,x2) | 
-      max(x1,x2) <= min( xa,xb) |
-      max(ya,yb) <= min( y1,y2) | 
-      max(y1,y2) <= min( ya,yb)
-    ) |> 
+    disjoint = pmax(xa, xb) <= pmin( x1,x2) |
+      pmax(x1,x2) <= pmin( xa,xb) |
+      pmax(ya,yb) <= pmin( y1,y2) |
+      pmax(y1,y2) <= pmin( ya,yb)
+  ) |>
   summarize( covered = all( disjoint )) |> 
   filter( covered ) |> 
   arrange( -area )
 
-  
-            
-            
-            
-            xt & xt < max(xa,xb) & min(ya, yb) < yt & yt < max(ya,yb)) 
-
-filter( rect_analysis, xt==7, yt==3)
-
-
+rect_analysis |> first() |> pull( area )
 
 
