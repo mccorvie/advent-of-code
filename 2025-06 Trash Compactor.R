@@ -26,3 +26,21 @@ pp <- mm[, ops=="*"] |> apply( 2, prod) |>  sum()
 ss+pp
 
 
+
+read_numbers <- \(mm) apply( mm, 2, \(x) as.numeric(paste0( x, collapse="")))
+mm <- str_split( input, "", simplify=T)
+
+ops <- mm[nrow(mm),]
+col_break <- c( which( ops!=" "), length( ops)+2)
+
+total = 0
+for( prob_n in 1:(length( col_break)-1))
+{
+  text_block <- mm[ 1:(nrow(mm)-1), col_break[prob_n]:(col_break[prob_n+1]-2)]
+  nums <- read_numbers( text_block )
+  res <- ifelse( ops[col_break[prob_n]] == "*", prod( nums ), sum( nums ))
+  cat( res, "\n")
+  total <- total+res
+}
+total
+
