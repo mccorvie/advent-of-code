@@ -51,6 +51,6 @@ rect_analysis <- expand_grid( area, tt=1:nt) |>
   filter( covered ) |> 
   arrange( -area )
 
-rect_analysis |> first() |> pull( area )
+rect_analysis |> first() |> pull( area ) # part 2
 
 
