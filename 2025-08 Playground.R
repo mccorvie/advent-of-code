@@ -43,7 +43,6 @@ table(circuit) |> sort() |> tail( 3) |> prod()
 
 
 circuit <- 1:n_box
-
 idx <-0
 while( max(circuit)-min(circuit) > 0 )
 {
