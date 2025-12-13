@@ -24,8 +24,7 @@ count_paths <- \(source, dest, reset=T)
 {
   if( reset ) path_num <<-list()
   if( source == dest) return(1)
-  #if( source %in% exclude ) return(0)
-  
+
   if( is.null( path_num[[source]]))
     path_num[[ source ]] <<- map_dbl( connect[[source]], \(x) count_paths( x, dest, F )) |> sum()
   
