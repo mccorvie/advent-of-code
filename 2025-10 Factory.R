@@ -79,60 +79,70 @@ compositions <- \( n, k )
 }
 
 recurse<<-0
-n_press_joltage0 <- \( buttons, joltage )
+
+n_press_joltage1 <- \( buttons, joltage )
 {
   recurse <<- recurse+1
-  if( recurse %% 1000 == 0)
-    cat( recurse, " buttons: ", ncol( buttons), " joltage: ", paste0(joltage, collapse=", "), "\n")
+  if( recurse %% 10000 == 0)
+    cat( "*")
+   #cat( recurse, " buttons: ", ncol( buttons), " joltage: ", paste0(joltage, collapse=", "), "\n")
 
+  
+  if( recurse > 1e6)
+    return( Inf )
+  
   bb<<-buttons
   jj <<-joltage
-   buttons<-bb
-   joltage<-jj
-  target_idx     <- which.min( joltage )
-  target_buttons <- which( buttons[target_idx,]==1 )
-  if( !length( target_buttons))
-    return( Inf)
-buttons
+  buttons<-bb
+  joltage<-jj
+
   
-  buttons
-  joltage
-  target_idx
-  target_buttons
+  
+    
+  buttons_for_jolt <- apply( buttons,1,sum)
+  if( any( buttons_for_jolt==0))
+    return( Inf )
+  
+  if( ncol( buttons)==1)
+    return( ifelse( max(joltage)==min(joltage),max(joltage), Inf))
+
+  n_butt <- apply(buttons,1,sum)
+  target_idx <- which.min( lchoose( joltage+n_butt-1,n_butt-1))
+  
+  target_buttons <- which( buttons[target_idx,]==1 )
 
   comp <- compositions( joltage[ target_idx ], length( target_buttons ) )
-  comp
-ncol(comp)
   pressed <- matrix( 0, ncol=ncol(comp), nrow = ncol(buttons))
   
   pressed[target_buttons, ] <- comp
-  pressed
-  buttons
   jremain = joltage - buttons %*% pressed
+  jremain_slack <- apply( jremain, 2, min) >= -1e-3 
   jremain
+  jremain_slack
+  if( !any( jremain_slack ))
+    return( Inf )
+  
+  jremain <- jremain[,jremain_slack,drop=F]
+# 
+#   pb <- progress_bar$new(
+#     total = ncol(jremain),
+#     format = "[:bar] :percent eta: :eta"
+#   )
+  
   min_npress <- Inf
-  cc<-1
-  for( cc in 1:ncol(pressed))
+  for( cc in 1:ncol(jremain))
   {
-    live_j   <- abs(jremain[,cc]) > 1e-3
-    if( !any( live_j ))
-    {
-      cat( "--> exact\n")
-      return( joltage[target_idx])
-    }
+#    pb$tick()
+    live_j   <- jremain[,cc] > 1e-3
     live_j
-    
-    dead_b <- apply( buttons[live_j,,drop=F],2,sum) < 1e-3
-    if( any( dead_b))
-      next
-    
+    if( !any( live_j ))
+      return( joltage[target_idx])
+
     live_b <- apply( buttons[!live_j,,drop=F],2,sum) < 1e-3
     if( !any( live_b))
       next
     
-    
-    
-    npress <- n_press_joltage0( buttons[ live_j, live_b, drop=F], jremain[live_j, cc ])
+    npress <- n_press_joltage1( buttons[ live_j, live_b, drop=F], jremain[live_j, cc ])
     min_npress <- min( npress, min_npress )
   }
   
@@ -141,24 +151,32 @@ ncol(comp)
 
 n_press_joltage <- \( line )
 {
-  cat( "*")
+  linenum<<-linenum+1
+  cat( linenum ," -> ")
+  recurse<<-0
+#  line <- input[7]
   joltage <- get_joltage_v( line )
   buttons <- get_button_m( line, length(joltage))
-  n_press_joltage0( buttons, joltage )
+  n_press <- n_press_joltage1( buttons, joltage )
+  cat( n_press,"\n")
+  n_press
 }
-bb
-jj
-line = input[1]
-line
-buttons
 
+ss <- qr.solve( buttons, joltage)
+
+buttons %*% ss - joltage
+
+linenum<-0
 map_dbl( input, n_press_joltage ) |> sum()
 
-
 bb
 jj
 
-## ridge regression
+qr.solve( bb, c(15,0,16,15))
+
+solve(bb[3:4,1:2],c(4,5))
+  
+  ## ridge regression
 
 joltage <- get_joltage_v( line )
 button  <- get_button_m (line, length( joltage))
@@ -174,3 +192,5 @@ coef(fit, s = "lambda.min")
 
 ridge_fit <- lm.ridge( joltage ~ button+0, lambda = 0.5)
 ridge_fit
+
+
