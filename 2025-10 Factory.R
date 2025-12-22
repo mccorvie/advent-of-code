@@ -68,7 +68,59 @@ n_press_indicator <- \(line)
   NA 
 }
 
-map_dbl( input, n_press_indicator) |> sum()
+map_dbl( input, n_press_indicator) |> sum()  # part 1
+
+eps <-1e-5
+
+n_press_joltage_qr <- \(line)
+{
+  joltage <- get_joltage_v( line )
+  buttons <- get_button_m( line, length(joltage))
+
+  res <- qr(buttons)
+  Q <- qr.Q(res)
+  R <- qr.R(res)
+  
+  rank <- res$rank
+  R1  <- R[1:rank,1:rank]
+  x_p <- backsolve( R1,t(Q)%*%joltage)
+
+  if( rank == ncol(R))
+    return( sum( x_p ))
+
+  R2 <- R[1:rank,(rank+1):ncol(R)]
+  NN <- -solve( R1) %*% R2
+  
+  explored <<- NULL
+  explore_nullspace( NN, x_p)
+  explored |> unlist() |> min()
+}
+
+explore_nullspace <- \( NN, x_p, cc=rep(0,ncol(NN)) )
+{
+  key <- paste0( cc, collapse="," )
+  if( !is.null( explored[[key]]))
+    return()
+
+  xx <- x_p + NN %*% cc
+  integer <- all( abs( round( xx )-xx)<eps )
+  nonneg  <- all( xx > -eps )
+  explored[[ key ]] <<- ifelse( integer & nonneg, sum( xx ) + sum( cc ), Inf )
+  obstructed <- apply( (NN < -eps) & as.vector( xx < -eps ), 2, any)
+  EE <- diag( length(cc))
+  for( ii in 1:ncol( NN))
+  {
+    if( obstructed[ii]) next
+    explore_nullspace( NN, x_p, cc + EE[ii,])
+  }
+}
+
+map_dbl( input, n_press_joltage_qr) |> sum() # part 2
+
+
+##
+##  too slow solver
+##
 
 
 # stars and bars
@@ -151,64 +203,5 @@ n_press_joltage2 <- \( buttons, joltage )
   
   return( min_npress + joltage[target_idx] )
 }
-
-
-
-joltage_max <- numeric()
-nullspace <- numeric()
-
-line <- input[3]
-
-idx <- 0
-mm1 <- numeric()
-mm2 <- numeric()
-mm3 <- numeric()
-mm4 <- numeric()
-for( line in input )
-{
-  idx <- idx+1
-  #line <- input[1]
-  
-  joltage <- get_joltage_v( line )
-  buttons <- get_button_m( line, length(joltage))
-  #mm3 <- c( mm3, sum( abs( joltage )))
-  
-  
-  res <- qr(buttons)
-  Q <- qr.Q(res)
-  R <- qr.R(res)
-  
-  rank <- res$rank
-  R1 <- R[1:rank,1:rank]
-  x_p <- backsolve( R1,t(Q)%*%joltage)
-
-    
-  if( rank < ncol(R))
-  {
-    R2 <- R[1:rank,(rank+1):ncol(R)]
-    NN <- -solve( R1) %*% R2
-    c <- qr.solve( NN, -x_p) |> round()
-    x_int <- x_p + NN %*% c
-    
-    mm2 <- c(mm2,sum((apply( NN, 2, sum)+1) < 1e-3))
-    
-   # mm2 <- c( mm2, max(abs(ip)))
-  }
-}
-NN
-
-
-mm1
-mm2
-mm3
-mm4
-NN |> round(3)
-
-x_p |> round(3)
-x_int |> round(3)
-
-8.666 / 0.666
-
-NN
 
 
